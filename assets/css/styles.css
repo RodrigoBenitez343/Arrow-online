@@ -1,0 +1,87 @@
+/* Integrated base styles with purple & blue palette for LoOper frontend */
+:root{
+  --bg: #0f1020;           /* deep background for contrast */
+  --card: #141428;          /* card surfaces */
+  --text: #e9e3ff;          /* light text */
+  --muted: #b9a6d6;         /* muted text */
+  --primary: #6d5bd0;        /* purple-blue primary */
+  --secondary: #3a6bd1;      /* blue accent */
+  --accent: #9e6aff;         /* accent purple */
+  --radius: 12px;
+}
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #0e0a1a 0%, #141428 60%, #0b0a1a 100%);
+  color: var(--text);
+  position: relative;
+}
+
+/* Parallax Background */
+.parallax-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  --parallax-base: 0px;
+  --parallax-offset: 0px;
+}
+.parallax-bg::before,
+.parallax-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  aspect-ratio: 1024 / 2048;
+  height: auto;
+  background: url('../images/bg-parallax-liquid.jpg') center top / 100% auto no-repeat;
+  will-change: transform;
+}
+.parallax-bg::before {
+  filter: blur(1.5px) brightness(0.44);
+  opacity: 0.92;
+  transform: translateX(-50%) translateY(calc(var(--parallax-base) + var(--parallax-offset))) scale(1.02);
+}
+.parallax-bg::after {
+  left: 52%;
+  filter: blur(5px) brightness(0.34) hue-rotate(10deg);
+  opacity: 0.2;
+  transform: translateX(-50%) translateY(calc(var(--parallax-base) + (var(--parallax-offset) * 0.55))) scale(1.05);
+}
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 28px;
+  background: rgba(21, 14, 38, 0.92);
+  border-bottom: 1px solid rgba(160, 140, 210, 0.25);
+  position: sticky; top: 0; z-index: 1000;
+}
+.brand { display: flex; align-items: baseline; gap: 12px; }
+.brand .logo { font-weight: 700; font-size: 1.25rem; color: #fff; letter-spacing: .5px; }
+.brand .tag { font-size: .85rem; color: #d8ccff; opacity: .9; }
+.site-nav { display: flex; gap: 16px; }
+.site-nav a { color: #dcd6ff; text-decoration: none; padding: 8px 12px; border-radius: 999px; border: 1px solid transparent; }
+.site-nav a.active, .site-nav a:hover { background: rgba(109, 91, 208, 0.25); border-color: rgba(109, 91, 208, 0.6); }
+.container { padding: 28px; max-width: 1100px; margin: 0 auto; }
+.hero { background: rgba(20, 22, 40, 0.9); border-radius: var(--radius); padding: 28px; margin: 20px 0; border: 1px solid rgba(109,91,208,.4); }
+.hero h1 { margin: 0 0 12px; font-size: 2rem; color: #f2eaff; }
+.hero p { color: var(--muted); font-size: 1.05rem; line-height: 1.5; }
+.cta-row { display: flex; gap: 12px; margin-top: 14px; }
+.btn { padding: 12px 20px; border-radius: 999px; text-decoration: none; font-weight: 600; display: inline-block; }
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; }
+.btn-secondary { background: rgba(106, 140, 255, 0.2); color: #e8eaff; border: 1px solid rgba(106,140,255,.6); }
+.card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+.card { background: rgba(20, 22, 40, 0.9); border:1px solid rgba(109,91,208,.4); border-radius: 12px; padding: 20px; min-height: 90px; display:flex; align-items:center; justify-content:center; color:#d9d2ff; }
+footer { text-align:center; padding: 18px; color: #c3bdf0; background: rgba(20,22,40,0.9); border-top:1px solid rgba(109,91,208,.4); }
+@media (max-width: 900px) {
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .site-nav { display: none; }
+  .hero { padding: 20px; }
+  .hero h1 { font-size: 1.5rem; }
+}

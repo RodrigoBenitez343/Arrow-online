@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoOper - About</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .about-section {
+      background: rgba(20, 22, 40, 0.9);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin: 20px 0;
+      border: 1px solid rgba(109,91,208,.4);
+    }
+    .about-section h2 {
+      margin: 28px 0 16px;
+      font-size: 1.5rem;
+      color: #f2eaff;
+    }
+    .about-section h3 {
+      margin: 20px 0 12px;
+      font-size: 1.2rem;
+      color: #d8ccff;
+    }
+    .about-section p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .about-section ul {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+    .about-section li {
+      margin-bottom: 8px;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .feature-card {
+      background: rgba(15, 16, 32, 0.8);
+      border: 1px solid rgba(109,91,208,.3);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .feature-card h4 {
+      margin: 0 0 8px;
+      color: #d8ccff;
+      font-size: 1rem;
+    }
+    .feature-card p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    .image-placeholder {
+      background: rgba(15, 16, 32, 0.8);
+      border: 2px dashed rgba(109,91,208,.4);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      color: #b9a6d6;
+      margin: 20px 0;
+    }
+    .screenshot-mosaic {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .screenshot-item {
+      background: rgba(15, 16, 32, 0.8);
+      border: 1px solid rgba(109,91,208,.3);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .screenshot-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(109, 91, 208, 0.3);
+    }
+    .screenshot-item .img-wrap {
+      display: block;
+      background: rgba(10, 11, 22, 0.9);
+      line-height: 0;
+    }
+    .screenshot-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .screenshot-item .caption {
+      color: #b9a6d6;
+      font-size: 0.7rem;
+      padding: 6px 8px;
+      text-align: center;
+      border-top: 1px solid rgba(109,91,208,.3);
+      background: rgba(15, 16, 32, 0.95);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Gallery layout - column spans only, height from image */
+    .sc-large { grid-column: span 2; }
+    .sc-wide { grid-column: span 2; }
+    .sc-tall { grid-column: span 1; }
+    .sc-normal { grid-column: span 1; }
+    @media (max-width: 900px) {
+      .screenshot-mosaic { grid-template-columns: repeat(3, 1fr); }
+      .sc-large { grid-column: span 2; }
+      .sc-wide { grid-column: span 2; }
+    }
+    @media (max-width: 600px) {
+      .screenshot-mosaic { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .sc-large { grid-column: span 2; }
+      .sc-wide { grid-column: span 2; }
+      .sc-tall { grid-column: span 1; }
+    }
+    @media (max-width: 700px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="parallax-bg"></div>
+  <header class="site-header">
+    <div class="brand" aria-label="LoOper brand">
+      <span class="logo">LoOper</span>
+      <span class="tag">Driven by and for human goals.</span>
+    </div>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html" class="active">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="docs.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <h1>About LoOper</h1>
+      <p>LoOper is a high-efficiency automation engine designed to build complex agents that run with minimal resources. By combining a deterministic set of tools with strategic AI, LoOper offloads the heavy lifting from LLMs to local, pre-validated action chains.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="beta.html">Join Beta Program</a>
+        <a class="btn btn-secondary" href="docs.html">Documentation</a>
+      </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section class="about-section">
+      <h2>Overview</h2>
+      <p>LoOper redefines desktop automation by separating AI decision-making from action execution:</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>🎨 NGUI</h4>
+          <p>Visual node-based workflow designer for building secure automation chains</p>
+        </div>
+        <div class="feature-card">
+          <h4>📹 Recorder</h4>
+          <p>Capture precise human actions to create deterministic behavioral knowledge base</p>
+        </div>
+        <div class="feature-card">
+          <h4>▶️ Player</h4>
+          <p>Execute workflows with visual validation, minimal LLM calls, and full audit trail</p>
+        </div>
+        <div class="feature-card">
+          <h4>🧠 LLM Nodes</h4>
+          <p>Strategic decision points that select from pre-built action sequences</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Features Section -->
+    <section class="about-section">
+      <h2>Key Features</h2>
+
+      <h3>Agent Builder & Neuro-Symbolic Graphs</h3>
+      <p>Build secure automation agents where LLMs make high-level decisions from pre-defined action chains. Create deterministic workflow graphs that combine neural (LLM) and symbolic (recorded chains) intelligence for reliable, auditable automation.</p>
+
+      <h3>Minimal LLM Dependency</h3>
+      <p>LLMs act as strategic selectors - choosing which pre-built action sequence to execute next. The actual work is done by recorded, validated chains that interact directly with applications, reducing LLM calls to decision points only.</p>
+
+      <h3>Human-in-the-Loop Design</h3>
+      <p>All action workflows are built from manually recorded, monitored sequences. LLMs never execute raw actions - they choose from human-validated behavioral knowledge base, ensuring safety and predictability.</p>
+
+      <h3>Visual Template Matching & Validation</h3>
+      <p>Recorded sequences use computer vision for reliable UI element detection with fallback mechanisms. Each action is visually validated during execution, creating a secure automation layer.</p>
+
+      <h3>Strategic LLM Integration</h3>
+      <p>Use LLMs for workflow planning and decision making, screen analysis and content understanding, natural language command interpretation, dynamic parameter selection for pre-built actions, and error recovery with adaptive workflow selection.</p>
+
+      <h3>Scheduler & Secure Sandboxing</h3>
+      <p>Schedule workflows and execute them in isolated environments. The agent builder approach ensures predictable behavior even in automated scenarios.</p>
+
+      <h3>Extensible Knowledge Base</h3>
+      <p>Grow your automation capabilities by recording new action sequences. Each recording adds to your agent's behavioral knowledge base that LLMs can leverage for decision making.</p>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="about-section">
+      <h2>Use Cases</h2>
+
+      <h3>Secure Business Process Automation</h3>
+      <p>Build auditable automation agents for finance, HR, and operations where LLMs make routing decisions from pre-validated action chains. Each action is a recorded, monitored sequence ensuring compliance and reliability.</p>
+
+      <h3>Intelligent Application Testing</h3>
+      <p>Create testing agents where LLMs analyze test results and select appropriate test sequences from your behavioral knowledge base. Combines AI-driven test planning with deterministic execution.</p>
+
+      <h3>Adaptive IT Operations</h3>
+      <p>Develop operations agents that monitor system states and execute predefined maintenance, deployment, or troubleshooting sequences based on LLM analysis - reducing manual intervention while maintaining control.</p>
+
+      <h3>Cognitive Content Processing</h3>
+      <p>Build content processing agents where LLMs understand and categorize content, then select appropriate processing workflows from your recorded action library for document handling, image processing, or data transformation.</p>
+
+      <h3>Personal Productivity Agents</h3>
+      <p>Create personal assistants that learn your habits through recorded sequences, then use LLMs to intelligently select and automate routines based on context, time, or priority - all while keeping actions human-verified.</p>
+    </section>
+
+    <!-- Technical Highlights Section -->
+    <section class="about-section">
+      <h2>Technical Highlights</h2>
+
+      <h3>Neuro-Symbolic Agent Architecture</h3>
+      <ul>
+        <li><strong>Symbolic Layer:</strong> Recorded, validated action chains that interact directly with applications</li>
+        <li><strong>Neural Layer:</strong> LLMs that make strategic decisions from pre-built action options</li>
+        <li><strong>Interface:</strong> Clean separation where LLMs never execute raw actions, only select from human-validated sequences</li>
+      </ul>
+
+      <h3>Deterministic Action Execution</h3>
+      <ul>
+        <li>All application interactions happen through recorded, monitored sequences</li>
+        <li>Zero LLM involvement in mouse/keyboard execution - pure recorded behavior</li>
+        <li>Visual template matching with fallback mechanisms for reliable UI interaction</li>
+        <li>Action validation and audit trail for every execution step</li>
+      </ul>
+
+      <h3>Strategic LLM Usage (Minimal Calls)</h3>
+      <ul>
+        <li>LLMs activated only at decision points in workflow</li>
+        <li>Typical usage: Analyze screen → Select next action sequence → Execute recorded chain</li>
+        <li>Reduces LLM calls by 90%+ compared to traditional LLM-driven automation</li>
+        <li>Local Ollama support ensures privacy and offline capability</li>
+      </ul>
+
+      <h3>Behavioral Knowledge Base</h3>
+      <ul>
+        <li>Each recorded sequence adds to your agent's action library</li>
+        <li>LLMs learn to associate screen states with appropriate action sequences</li>
+        <li>Knowledge base grows organically through human demonstration</li>
+        <li>Enables transfer learning across similar applications and workflows</li>
+      </ul>
+
+      <h3>Secure Workflow Design</h3>
+      <ul>
+        <li>Human-in-the-loop recording ensures all actions are pre-validated</li>
+        <li>Sandbox execution isolates workflows from host system</li>
+        <li>Comprehensive logging and monitoring of all LLM decisions and action executions</li>
+        <li>Fail-safe mechanisms: LLMs can only choose from pre-defined, safe action options</li>
+      </ul>
+
+      <h3>Advanced Recording Intelligence</h3>
+      <ul>
+        <li>Smart grouping: Scroll bursts, text sequences, modifier combinations</li>
+        <li>Automatic screenshot capture for visual validation during playback</li>
+        <li>Drag-and-drop detection with configurable thresholds</li>
+        <li>Context-aware recording (active application, window focus)</li>
+      </ul>
+
+      <h3>Visual Workflow Management</h3>
+      <ul>
+        <li>Drag-and-drop node editor for building agent workflows</li>
+        <li>Conditional routing based on LLM decisions or screen state</li>
+        <li>Loop controls with exit conditions and iteration limits</li>
+        <li>Sub-workflow composition for knowledge base organization</li>
+      </ul>
+    </section>
+
+    <!-- Screenshots Gallery -->
+    <section class="about-section">
+      <h2>Screenshots & Demo</h2>
+      <div class="screenshot-mosaic">
+        <div class="screenshot-item sc-large">
+          <div class="img-wrap"><img src="assets/images/worflowexample.PNG" alt="Visual Workflow Editor" loading="lazy" /></div>
+          <div class="caption">Visual node-based workflow editor</div>
+        </div>
+        <div class="screenshot-item sc-large">
+          <div class="img-wrap"><img src="assets/images/complete.PNG" alt="Complete Workflow View" loading="lazy" /></div>
+          <div class="caption">Complete workflow with chains library</div>
+        </div>
+        <div class="screenshot-item sc-tall">
+          <div class="img-wrap"><img src="assets/images/conditionaldialog.PNG" alt="Advanced Conditions" loading="lazy" /></div>
+          <div class="caption">Advanced conditional triggers</div>
+        </div>
+        <div class="screenshot-item sc-normal">
+          <div class="img-wrap"><img src="assets/images/chainimportdialog.PNG" alt="Chain Import Configuration" loading="lazy" /></div>
+          <div class="caption">Chain import</div>
+        </div>
+        <div class="screenshot-item sc-normal">
+          <div class="img-wrap"><img src="assets/images/expandedchaindialog.PNG" alt="Edit Imported Chain" loading="lazy" /></div>
+          <div class="caption">Edit imported chain</div>
+        </div>
+        <div class="screenshot-item sc-normal">
+          <div class="img-wrap"><img src="assets/images/llmbasicdialog.PNG" alt="LLM Node Configuration" loading="lazy" /></div>
+          <div class="caption">LLM configuration</div>
+        </div>
+        <div class="screenshot-item sc-normal">
+          <div class="img-wrap"><img src="assets/images/sequencedialog.PNG" alt="Sequence Properties" loading="lazy" /></div>
+          <div class="caption">Sequence properties</div>
+        </div>
+        <div class="screenshot-item sc-wide">
+          <div class="img-wrap"><img src="assets/images/topbar.PNG" alt="Application Toolbar" loading="lazy" /></div>
+          <div class="caption">Toolbar</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose LoOper Section -->
+    <section class="about-section">
+      <h2>Why Choose LoOper?</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>✅ User-Friendly</h4>
+          <p>Visual interface means no coding required for basic automation tasks</p>
+        </div>
+        <div class="feature-card">
+          <h4>✅ Powerful Features</h4>
+          <p>Computer vision, AI integration, and advanced workflow controls</p>
+        </div>
+        <div class="feature-card">
+          <h4>✅ Flexible & Extensible</h4>
+          <p>Modular architecture allows customization and extension</p>
+        </div>
+        <div class="feature-card">
+          <h4>✅ Reliable Execution</h4>
+          <p>Fallback mechanisms and error recovery for robust automation</p>
+        </div>
+        <div class="feature-card">
+          <h4>✅ Local-First Design</h4>
+          <p>AI models run locally for privacy and offline capability</p>
+        </div>
+        <div class="feature-card">
+          <h4>✅ Active Development</h4>
+          <p>Regular updates and community support</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support & Community Section -->
+    <section class="about-section">
+      <h2>Support & Community</h2>
+      <ul>
+        <li><strong>Documentation:</strong> Comprehensive user guide and API reference</li>
+        <li><strong>Community:</strong> Join our forums and Discord for discussions</li>
+        <li><strong>Support:</strong> Visit our <a href="contact.html" style="color: var(--accent);">Contact page</a> for assistance</li>
+      </ul>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="about-section" style="text-align: center;">
+      <h2>Ready to Automate?</h2>
+      <p>Transform desktop automation from simple macro recording to intelligent, visual, AI-powered workflow orchestration.</p>
+      <div class="cta-row" style="justify-content: center;">
+        <a class="btn btn-primary" href="beta.html">Join Beta Program</a>
+        <a class="btn btn-secondary" href="docs.html">View Documentation</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2026 LoOper</footer>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

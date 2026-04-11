@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beta Program - LoOper</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .beta-layout {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      min-height: calc(100vh - 200px);
+      padding: 20px 0;
+    }
+    .beta-filler-image {
+      flex: 1 1 auto;
+      min-width: 300px;
+      max-width: 500px;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius) 0 0 var(--radius);
+    }
+    .beta-filler-image img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(90deg);
+      width: auto;
+      height: 140%;
+      min-width: 140%;
+      object-fit: cover;
+      object-position: center;
+    }
+    .form-section {
+      background: rgba(20, 22, 40, 0.9);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 32px;
+      border: 1px solid rgba(109,91,208,.4);
+      border-left: none;
+      max-width: 600px;
+      flex: 0 0 auto;
+    }
+    .form-section h1 {
+      margin: 0 0 12px;
+      font-size: 1.8rem;
+      color: #f2eaff;
+    }
+    .form-section p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #d8ccff;
+      font-weight: 500;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(109,91,208,.4);
+      background: rgba(15, 16, 32, 0.8);
+      color: var(--text);
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .form-group input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      color: #d8ccff;
+    }
+    .submit-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+    .benefits-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+    .benefits-list li {
+      padding: 8px 0;
+      color: #d8ccff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .benefits-list li::before {
+      content: "✓";
+      color: var(--accent);
+      font-weight: bold;
+    }
+    @media (max-width: 1024px) {
+      .beta-filler-image {
+        display: none;
+      }
+      .beta-layout {
+        justify-content: center;
+      }
+      .form-section {
+        border-radius: var(--radius);
+        border: 1px solid rgba(109,91,208,.4);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="parallax-bg"></div>
+  <header class="site-header">
+    <div class="brand" aria-label="LoOper brand">
+      <span class="logo">LoOper</span>
+      <span class="tag">Driven by and for human goals.</span>
+    </div>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="docs.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="beta-layout">
+      <div class="beta-filler-image">
+        <img src="assets/images/betatestingfiller.png" alt="Beta Testing Illustration" />
+      </div>
+      <section class="form-section">
+      <h1>Join the LoOper Beta Program</h1>
+      <p>Be among the first to experience deterministic AI automation. Get early access to new features and help shape the future of LoOper.</p>
+      
+      <ul class="benefits-list">
+        <li>Early access to new features</li>
+        <li>Direct feedback channel with the development team</li>
+        <li>Exclusive beta tester resources and documentation</li>
+        <li>Free premium features during beta period</li>
+      </ul>
+
+      <form action="#" method="POST">
+        <div class="form-group">
+          <label for="fullname">Full Name *</label>
+          <input type="text" id="fullname" name="fullname" required placeholder="Enter your full name" />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" name="email" required placeholder="your@email.com" />
+        </div>
+
+        <div class="form-group">
+          <label for="company">Company / Organization</label>
+          <input type="text" id="company" name="company" placeholder="Your company (optional)" />
+        </div>
+
+        <div class="form-group">
+          <label for="role">Your Role</label>
+          <select id="role" name="role">
+            <option value="">Select your role</option>
+            <option value="developer">Developer</option>
+            <option value="devops">DevOps Engineer</option>
+            <option value="product">Product Manager</option>
+            <option value="researcher">AI Researcher</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="usecase">How do you plan to use LoOper?</label>
+          <textarea id="usecase" name="usecase" placeholder="Tell us about your use case..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="newsletter" checked />
+            Subscribe to our newsletter for updates
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="terms" required />
+            I agree to the <a href="beta-terms.html" target="_blank" style="color: var(--accent);">Beta Program Terms and Conditions</a> *
+          </label>
+          <p style="font-size: 0.85rem; color: #b9a6d6; margin-top: 8px; margin-left: 24px;">Please review our terms, including the disclaimer that beta software may contain errors and bugs.</p>
+        </div>
+
+        <button type="submit" class="submit-btn">Apply for Beta Access</button>
+      </form>
+      </section>
+    </div>
+  </main>
+
+  <footer>© 2026 LoOper</footer>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

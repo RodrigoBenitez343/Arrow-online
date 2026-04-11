@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoOper - Pricing</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .pricing-section {
+      background: rgba(20, 22, 40, 0.9);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 20px 0;
+      border: 1px solid rgba(109,91,208,.4);
+    }
+    .pricing-section h2 {
+      color: #f2eaff;
+      margin-top: 0;
+      text-align: center;
+      font-size: 1.8rem;
+    }
+    .pricing-section .subtitle {
+      color: #b9a6d6;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin: 32px 0;
+    }
+    .pricing-card {
+      background: rgba(15, 16, 32, 0.8);
+      border: 1px solid rgba(109,91,208,.3);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      min-width: 0;
+    }
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(109, 91, 208, 0.3);
+    }
+    .pricing-card.featured {
+      border: 2px solid var(--accent);
+      background: linear-gradient(135deg, rgba(109, 91, 208, 0.15), rgba(15, 16, 32, 0.9));
+    }
+    .pricing-card .badge {
+      position: absolute;
+      top: -12px;
+      right: 16px;
+      background: linear-gradient(135deg, var(--accent), #9e6aff);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .pricing-card h3 {
+      color: #f2eaff;
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+    }
+    .pricing-card .target {
+      color: #9e6aff;
+      font-size: 0.8rem;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+    .pricing-card .price {
+      color: #f2eaff;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .pricing-card .price-period {
+      color: #b9a6d6;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+    .pricing-card .description {
+      color: #b9a6d6;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+    .pricing-card .features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+    }
+    .pricing-card .features li {
+      color: #d8ccff;
+      font-size: 0.85rem;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(109,91,208,.2);
+    }
+    .pricing-card .features li:last-child {
+      border-bottom: none;
+    }
+    .pricing-card .features li::before {
+      content: "✓";
+      color: #32CD32;
+      margin-right: 8px;
+      font-weight: bold;
+    }
+    .pricing-card .btn {
+      width: 100%;
+      text-align: center;
+      margin-top: auto;
+      box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Calculator Section */
+    .calculator-section {
+      background: rgba(15, 16, 32, 0.8);
+      border: 1px solid rgba(109,91,208,.3);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 32px;
+    }
+    .calculator-section h3 {
+      color: #f2eaff;
+      margin-top: 0;
+    }
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+    .calculator-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-group label {
+      color: #d8ccff;
+      font-size: 0.9rem;
+    }
+    .input-group input[type="number"] {
+      padding: 10px 14px;
+      background: rgba(20, 22, 40, 0.9);
+      border: 1px solid rgba(109,91,208,.4);
+      border-radius: 6px;
+      color: #f2eaff;
+      font-size: 1rem;
+      width: 120px;
+    }
+    .input-group input[type="range"] {
+      width: 100%;
+      margin-top: 8px;
+    }
+    .slider-value {
+      color: #9e6aff;
+      font-weight: 600;
+    }
+    .billing-toggle {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .billing-toggle label {
+      color: #b9a6d6;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(109,91,208,.3);
+      transition: all 0.2s;
+    }
+    .billing-toggle input[type="radio"] {
+      display: none;
+    }
+    .billing-toggle input[type="radio"]:checked + label {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .calculator-result {
+      background: rgba(20, 22, 40, 0.9);
+      border: 1px solid rgba(109,91,208,.4);
+      border-radius: 8px;
+      padding: 24px;
+    }
+    .calculator-result .result-label {
+      color: #b9a6d6;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .calculator-result .result-price {
+      color: #f2eaff;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .calculator-result .result-period {
+      color: #9e6aff;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+    .calculator-result .savings {
+      color: #32CD32;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+    }
+    .calculator-result .breakdown {
+      border-top: 1px solid rgba(109,91,208,.3);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+    .calculator-result .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      color: #b9a6d6;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+    .calculator-result .breakdown-item.total {
+      color: #f2eaff;
+      font-weight: 600;
+      border-top: 1px solid rgba(109,91,208,.3);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    /* Beta Section */
+    .beta-section {
+      background: linear-gradient(135deg, rgba(109, 91, 208, 0.2), rgba(158, 106, 255, 0.1));
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+    }
+    .beta-section h3 {
+      color: #f2eaff;
+      margin-top: 0;
+    }
+    .beta-section p {
+      color: #d8ccff;
+      max-width: 600px;
+      margin: 0 auto 20px;
+    }
+    .beta-features {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .beta-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #b9a6d6;
+      font-size: 0.9rem;
+    }
+    .beta-feature::before {
+      content: "✓";
+      color: #32CD32;
+      font-weight: bold;
+    }
+
+    @media (max-width: 1200px) {
+      .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .pricing-grid { grid-template-columns: 1fr; max-width: 500px; margin-left: auto; margin-right: auto; }
+    }
+    @media (max-width: 768px) {
+      .calculator-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="parallax-bg"></div>
+  <header class="site-header">
+    <div class="brand" aria-label="LoOper brand">
+      <span class="logo">LoOper</span>
+      <span class="tag">Driven by and for human goals.</span>
+    </div>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="docs.html">Docs</a>
+      <a href="pricing.html" class="active">Pricing</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="hero" class="hero">
+      <h1>Simple, Transparent Pricing</h1>
+      <p>Choose the plan that fits your automation needs. All plans include full access to every feature—no paywalls, no per-run charges.</p>
+    </section>
+
+    <section class="pricing-section">
+      <h2>Choose Your Plan</h2>
+      <p class="subtitle">One price. All features. No surprises.</p>
+
+      <div class="pricing-grid">
+        <!-- Individual Plan -->
+        <div class="pricing-card">
+          <h3>Individual</h3>
+          <div class="target">For personal use</div>
+          <div class="price">$100</div>
+          <div class="price-period">One-time payment, permanent license</div>
+          <div class="description">Perfect for power users and solo professionals who want to automate their personal workflows.</div>
+          <ul class="features">
+            <li>Up to 5 devices</li>
+            <li>All features included</li>
+            <li>Unlimited workflows</li>
+            <li>Unlimited executions</li>
+            <li>Local AI integration</li>
+            <li>Priority support</li>
+          </ul>
+          <a href="contact.html" class="btn btn-secondary">Get Started</a>
+        </div>
+
+        <!-- Corporate Perpetual Plan -->
+        <div class="pricing-card featured">
+          <span class="badge">Popular</span>
+          <h3>Corporate License</h3>
+          <div class="target">For teams & businesses</div>
+          <div class="price" id="corpPrice">$100</div>
+          <div class="price-period">Per device, one-time payment</div>
+          <div class="description">Scale automation across your organization with bulk pricing and volume discounts.</div>
+          <ul class="features">
+            <li>Unlimited devices</li>
+            <li>Bulk volume discounts</li>
+            <li>All features included</li>
+            <li>Unlimited workflows</li>
+            <li>Enterprise support</li>
+            <li>Custom onboarding</li>
+          </ul>
+          <a href="#calculator" class="btn btn-primary">Calculate Price</a>
+        </div>
+
+        <!-- Subscription Plan -->
+        <div class="pricing-card">
+          <h3>Subscription</h3>
+          <div class="target">Flexible monthly plan</div>
+          <div class="price">$2</div>
+          <div class="price-period">Per month, per device</div>
+          <div class="description">Low-cost monthly subscription with full feature access. Cancel anytime.</div>
+          <ul class="features">
+            <li>All features included</li>
+            <li>Unlimited workflows</li>
+            <li>Unlimited executions</li>
+            <li>Local AI integration</li>
+            <li>Standard support</li>
+            <li>Cancel anytime</li>
+          </ul>
+          <a href="contact.html" class="btn btn-secondary">Subscribe</a>
+        </div>
+
+        <!-- Beta Program -->
+        <div class="pricing-card">
+          <span class="badge">Free</span>
+          <h3>Beta Program</h3>
+          <div class="target">Early access</div>
+          <div class="price">$0</div>
+          <div class="price-period">Free during beta</div>
+          <div class="description">Get early access to LoOper for free. Active testers who provide feedback and report bugs can earn a free permanent license.</div>
+          <ul class="features">
+            <li>All features included</li>
+            <li>Pre-release functionality</li>
+            <li>Direct feedback channel</li>
+            <li>Shape the product</li>
+            <li>Earn free license*</li>
+            <li>Community recognition</li>
+          </ul>
+          <a href="beta.html" class="btn btn-secondary">Apply for Beta</a>
+        </div>
+      </div>
+
+      <!-- Corporate Calculator -->
+      <div class="calculator-section" id="calculator">
+        <h3>Corporate License Calculator</h3>
+        <div class="calculator-grid">
+          <div class="calculator-inputs">
+            <div class="input-group">
+              <label>Number of Devices</label>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <input type="number" id="deviceCount" min="1" value="10" />
+                <span class="slider-value" id="deviceValue">10 devices</span>
+              </div>
+              <input type="range" id="deviceSlider" min="1" max="500" value="10" />
+            </div>
+            <div class="input-group">
+              <label>Billing Option</label>
+              <div class="billing-toggle">
+                <input type="radio" name="billing" id="onetime" value="onetime" checked />
+                <label for="onetime">One-time ($100/device)</label>
+                <input type="radio" name="billing" id="monthly" value="monthly" />
+                <label for="monthly">Monthly ($2/device)</label>
+              </div>
+            </div>
+          </div>
+          <div class="calculator-result">
+            <div class="result-label">Your Price</div>
+            <div class="result-price" id="totalPrice">$900</div>
+            <div class="result-period" id="pricePeriod">One-time payment</div>
+            <div class="savings" id="savingsText">You save $100 with volume discount!</div>
+            <div class="breakdown">
+              <div class="breakdown-item">
+                <span>Base price (10 × $100)</span>
+                <span id="basePrice">$1,000</span>
+              </div>
+              <div class="breakdown-item">
+                <span>Volume discount (10%)</span>
+                <span id="discountAmount">-$100</span>
+              </div>
+              <div class="breakdown-item total">
+                <span>Total</span>
+                <span id="finalTotal">$900</span>
+              </div>
+            </div>
+            <a href="contact.html" class="btn btn-primary" style="margin-top: 16px; display: block; text-align: center;">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beta Program Info -->
+      <div class="beta-section">
+        <h3>Join Our Beta Program</h3>
+        <p>Be among the first to experience LoOper and help shape its future. Beta testers get free access to all features and can earn a permanent license through active participation.</p>
+        <div class="beta-features">
+          <span class="beta-feature">Free access during beta</span>
+          <span class="beta-feature">All features unlocked</span>
+          <span class="beta-feature">Early feature previews</span>
+          <span class="beta-feature">Direct developer access</span>
+          <span class="beta-feature">Free lifetime license*</span>
+        </div>
+        <div style="background: rgba(15, 16, 32, 0.6); border-left: 3px solid var(--accent); padding: 16px; margin: 20px 0; text-align: left; border-radius: 0 8px 8px 0;">
+          <h4 style="color: #f2eaff; margin: 0 0 8px; font-size: 0.95rem;">How to Earn Your Free License</h4>
+          <p style="color: #b9a6d6; font-size: 0.85rem; line-height: 1.5; margin: 0;">After the initial beta period ends, the program will transition to an Early Access model. To maintain free access, testers must periodically provide feedback on new functionalities, report bugs, and suggest enhancements. Active participation is required—simply having the software is not enough. We value testers who continuously help us improve LoOper through ongoing, meaningful engagement with each update.</p>
+        </div>
+        <p style="font-size: 0.8rem; color: #b9a6d6; margin-top: 16px;">*Free lifetime licenses are awarded to beta testers who demonstrate consistent, quality participation throughout the beta period.</p>
+        <a href="beta.html" class="btn btn-primary" style="margin-top: 16px;">Apply for Beta Access</a>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="pricing-section">
+      <h2>Frequently Asked Questions</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 24px;">
+        <div>
+          <h4 style="color: #d8ccff; margin-bottom: 8px;">What's included in all plans?</h4>
+          <p style="color: #b9a6d6; font-size: 0.9rem; line-height: 1.5;">Every plan includes all LoOper features: visual workflow editor, recording, playback, AI integration, scheduling, sandboxing, and unlimited workflows.</p>
+        </div>
+        <div>
+          <h4 style="color: #d8ccff; margin-bottom: 8px;">Can I switch plans later?</h4>
+          <p style="color: #b9a6d6; font-size: 0.9rem; line-height: 1.5;">Yes! You can upgrade from Subscription to Individual or Corporate at any time. Contact us for migration options.</p>
+        </div>
+        <div>
+          <h4 style="color: #d8ccff; margin-bottom: 8px;">How does the volume discount work?</h4>
+          <p style="color: #b9a6d6; font-size: 0.9rem; line-height: 1.5;">Corporate licenses get progressive discounts: 5% for 10+ devices, 10% for 25+, 15% for 50+, 20% for 100+, and 25% for 250+ devices.</p>
+        </div>
+        <div>
+          <h4 style="color: #d8ccff; margin-bottom: 8px;">Is there a free trial?</h4>
+          <p style="color: #b9a6d6; font-size: 0.9rem; line-height: 1.5;">Apply for our Beta Program to get free access during the testing phase, or contact sales for a corporate evaluation license.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2026 LoOper</footer>
+  <script src="assets/js/app.js"></script>
+  <script>
+    const deviceSlider = document.getElementById('deviceSlider');
+    const deviceCount = document.getElementById('deviceCount');
+    const deviceValue = document.getElementById('deviceValue');
+    const totalPrice = document.getElementById('totalPrice');
+    const pricePeriod = document.getElementById('pricePeriod');
+    const savingsText = document.getElementById('savingsText');
+    const basePriceEl = document.getElementById('basePrice');
+    const discountAmountEl = document.getElementById('discountAmount');
+    const finalTotalEl = document.getElementById('finalTotal');
+    const onetimeRadio = document.getElementById('onetime');
+    const monthlyRadio = document.getElementById('monthly');
+
+    function getDiscountRate(count) {
+      if (count >= 250) return 0.25;
+      if (count >= 100) return 0.20;
+      if (count >= 50) return 0.15;
+      if (count >= 25) return 0.10;
+      if (count >= 10) return 0.05;
+      return 0;
+    }
+
+    function calculatePrice() {
+      const count = parseInt(deviceCount.value) || 1;
+      const isMonthly = monthlyRadio.checked;
+      const baseRate = isMonthly ? 2 : 100;
+      const discountRate = isMonthly ? 0 : getDiscountRate(count);
+      
+      const baseTotal = count * baseRate;
+      const discount = Math.round(baseTotal * discountRate);
+      const finalTotal = baseTotal - discount;
+      
+      deviceValue.textContent = count + ' device' + (count !== 1 ? 's' : '');
+      totalPrice.textContent = '$' + finalTotal.toLocaleString();
+      pricePeriod.textContent = isMonthly ? 'Per month' : 'One-time payment';
+      
+      if (isMonthly) {
+        savingsText.textContent = 'Monthly subscription - cancel anytime';
+        savingsText.style.color = '#9e6aff';
+      } else if (discount > 0) {
+        const percent = Math.round(discountRate * 100);
+        savingsText.textContent = `You save $${discount.toLocaleString()} with ${percent}% volume discount!`;
+        savingsText.style.color = '#32CD32';
+      } else {
+        savingsText.textContent = 'Add 10+ devices for volume discounts';
+        savingsText.style.color = '#b9a6d6';
+      }
+      
+      basePriceEl.textContent = '$' + baseTotal.toLocaleString();
+      discountAmountEl.textContent = discount > 0 ? '-$' + discount.toLocaleString() : '$0';
+      finalTotalEl.textContent = '$' + finalTotal.toLocaleString();
+    }
+
+    deviceSlider.addEventListener('input', (e) => {
+      deviceCount.value = e.target.value;
+      calculatePrice();
+    });
+
+    deviceCount.addEventListener('input', (e) => {
+      let val = parseInt(e.target.value) || 1;
+      if (val > 500) val = 500;
+      if (val < 1) val = 1;
+      deviceSlider.value = val;
+      calculatePrice();
+    });
+
+    onetimeRadio.addEventListener('change', calculatePrice);
+    monthlyRadio.addEventListener('change', calculatePrice);
+
+    calculatePrice();
+  </script>
+</body>
+</html>

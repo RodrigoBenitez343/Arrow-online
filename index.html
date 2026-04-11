@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoOper - AI-Powered Desktop Automation</title>
+  <meta name="description" content="LoOper is a desktop-native automation platform that combines deterministic action chains with local AI. Build intelligent agents that see, reason, and act." />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .feature-section {
+      margin: 40px 0;
+    }
+    .feature-section h2 {
+      color: #f2eaff;
+      font-size: 1.8rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .feature-card {
+      background: rgba(20, 22, 40, 0.9);
+      border: 1px solid rgba(109,91,208,.4);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(109, 91, 208, 0.3);
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+    .feature-card h3 {
+      color: #d8ccff;
+      font-size: 1.1rem;
+      margin: 0 0 12px;
+    }
+    .feature-card p {
+      color: #b9a6d6;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+    .audience-section {
+      background: rgba(20, 22, 40, 0.9);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 40px 0;
+      border: 1px solid rgba(109,91,208,.4);
+    }
+    .audience-section h2 {
+      color: #f2eaff;
+      font-size: 1.6rem;
+      margin: 0 0 24px;
+      text-align: center;
+    }
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .audience-card {
+      padding: 20px;
+      border-left: 3px solid var(--accent);
+    }
+    .audience-card h4 {
+      color: #d8ccff;
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+    .audience-card p {
+      color: #b9a6d6;
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .cta-section {
+      text-align: center;
+      padding: 48px 32px;
+      background: linear-gradient(135deg, rgba(109, 91, 208, 0.2), rgba(158, 106, 255, 0.1));
+      border-radius: 12px;
+      margin: 40px 0;
+      border: 1px solid rgba(109,91,208,.4);
+    }
+    .cta-section h2 {
+      color: #f2eaff;
+      font-size: 1.8rem;
+      margin: 0 0 16px;
+    }
+    .cta-section p {
+      color: #b9a6d6;
+      font-size: 1.1rem;
+      margin: 0 0 24px;
+    }
+    @media (max-width: 900px) {
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .audience-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="parallax-bg"></div>
+  <header class="site-header">
+    <div class="brand" aria-label="LoOper brand">
+      <span class="logo">LoOper</span>
+      <span class="tag">driven by and for human goals.</span>
+    </div>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="index.html" class="active">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="docs.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <h1>Build AI Agents That See, Reason & Act</h1>
+      <p>LoOper is a desktop-native automation platform that combines <strong>deterministic action chains</strong> with <strong>local AI reasoning</strong>. Create intelligent agents that visually understand your screen, make decisions with LLMs, and execute reliable workflows—all while keeping your data private.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="beta.html">Join Beta Program</a>
+        <a class="btn btn-secondary" href="docs.html">Documentation</a>
+        <a class="btn btn-secondary" href="about.html">Learn More</a>
+      </div>
+    </section>
+
+    <!-- Core Capabilities -->
+    <section class="feature-section">
+      <h2>Core Capabilities</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📹</div>
+          <h3>Visual Recording</h3>
+          <p>Record mouse, keyboard, and screen interactions with automatic screenshot capture for reliable playback.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3>Local AI Integration</h3>
+          <p>Connect to Ollama for on-device LLM reasoning. No cloud required—your data stays private.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>Visual Workflow Editor</h3>
+          <p>Build complex automation chains with our node-based graph editor. No coding required.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Secure Sandboxing</h3>
+          <p>Run automations in isolated RDP sessions. Safe execution without interfering with your work.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👁️</div>
+          <h3>Computer Vision</h3>
+          <p>Template matching and OCR for reliable UI element detection and text recognition.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⏰</div>
+          <h3>Scheduled Execution</h3>
+          <p>Set up recurring or one-time schedules. Automations run even when you're away.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔗</div>
+          <h3>Conditional Logic</h3>
+          <p>Create branching workflows with presence triggers, OCR conditions, and code evaluation.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Neuro-Symbolic AI</h3>
+          <p>LLMs make high-level decisions while deterministic chains handle execution—90% fewer API calls.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Target Audience -->
+    <section class="audience-section">
+      <h2>Who is LoOper For?</h2>
+      <div class="audience-grid">
+        <div class="audience-card">
+          <h4>🏢 Business Process Automation</h4>
+          <p>Finance, HR, and operations teams building auditable, compliant automation for repetitive tasks.</p>
+        </div>
+        <div class="audience-card">
+          <h4>🧪 QA & Testing Engineers</h4>
+          <p>Create intelligent test agents that adapt to UI changes while maintaining deterministic execution.</p>
+        </div>
+        <div class="audience-card">
+          <h4>⚙️ IT Operations</h4>
+          <p>Monitor systems and execute maintenance workflows with AI-driven decision making.</p>
+        </div>
+        <div class="audience-card">
+          <h4>🤖 AI Enthusiasts</h4>
+          <p>Experiment with neuro-symbolic agents combining local LLMs with reliable automation.</p>
+        </div>
+        <div class="audience-card">
+          <h4>👨‍💻 Power Users</h4>
+          <p>Automate personal workflows with intelligent agents that learn and adapt to your habits.</p>
+        </div>
+        <div class="audience-card">
+          <h4>🏗️ RPA Developers</h4>
+          <p>Build advanced automations with visual validation, AI reasoning, and secure sandboxing.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <h2>Ready to Automate Smarter?</h2>
+      <p>Join our beta program and be among the first to experience the future of AI-powered desktop automation.</p>
+      <div class="cta-row" style="justify-content: center;">
+        <a class="btn btn-primary" href="beta.html">Apply for Beta Access</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2026 LoOper</footer>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
