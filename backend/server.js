@@ -15,8 +15,10 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from parent directory (the website)
 app.use(express.static(path.join(__dirname, '..')));
 
-// Store submissions (in-memory for now, could use a file or database)
+// Store submissions (in-memory for now, could use a file or a database)
 let submissions = [];
+let contactSubmissions = [];
+let purchaseRequests = [];
 
 // Create email transporter
 // Using Gmail SMTP - you'll need to set up an App Password
@@ -144,9 +146,292 @@ app.post('/api/beta-register', async (req, res) => {
   }
 });
 
+// Contact form endpoint
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, inquiryType, company, version, subject, message } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !inquiryType || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please fill in all required fields'
+      });
+    }
+
+    // Create submission object
+    const submission = {
+      id: Date.now(),
+      type: 'contact',
+      name,
+      email,
+      inquiryType,
+      company: company || 'Not provided',
+      version: version || 'Not provided',
+      subject,
+      message,
+      submittedAt: new Date().toISOString()
+    };
+
+    // Store submission
+    contactSubmissions.push(submission);
+
+    // Inquiry type labels
+    const inquiryLabels = {
+      'partners': 'Partnership Opportunity',
+      'bug': 'Bug Report',
+      'feature': 'Feature Request',
+      'general': 'General Inquiry'
+    };
+
+    // Send email notification to admin
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
+      to: 'vozicomsystems@gmail.com',
+      subject: `[LoOper Contact] ${inquiryLabels[inquiryType]}: ${subject}`,
+      html: `
+        <h2>New Contact Form Submission</h2>
+        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Name</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Email</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${email}</td>
+          </tr>
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Inquiry Type</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${inquiryLabels[inquiryType]}</td>
+          </tr>
+          ${company !== 'Not provided' ? `
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Company</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${company}</td>
+          </tr>
+          ` : ''}
+          ${version !== 'Not provided' ? `
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Version</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${version}</td>
+          </tr>
+          ` : ''}
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Subject</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${subject}</td>
+          </tr>
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; vertical-align: top;">Message</td>
+            <td style="padding: 10px; border: 1px solid #ddd; white-space: pre-wrap;">${message}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Submitted At</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${submission.submittedAt}</td>
+          </tr>
+        </table>
+        <p style="margin-top: 20px; color: #666;">
+          Total contact submissions: ${contactSubmissions.length}
+        </p>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // Send confirmation email to user
+    const userMailOptions = {
+      from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
+      to: email,
+      subject: 'We received your message - LoOper',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #6d5bd0;">Thank you for contacting us, ${name}!</h2>
+          <p>We've received your ${inquiryLabels[inquiryType].toLowerCase()} and will get back to you as soon as possible.</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <p style="margin-top: 20px;">Our team typically responds within 24-48 hours during business days.</p>
+          <p style="margin-top: 30px; color: #666;">
+            Best regards,<br>
+            The LoOper Team
+          </p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(userMailOptions);
+
+    console.log(`Contact form submitted by ${email} - Type: ${inquiryType}`);
+
+    res.json({
+      success: true,
+      message: 'Message sent successfully! We will get back to you soon.'
+    });
+
+  } catch (error) {
+    console.error('Error processing contact form:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error. Please try again later.'
+    });
+  }
+});
+
+// Purchase request endpoint
+app.post('/api/purchase', async (req, res) => {
+  try {
+    const { name, email, company, plan, devices, billing, totalPrice, message } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !plan) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please fill in all required fields'
+      });
+    }
+
+    // Create purchase request object
+    const request = {
+      id: Date.now(),
+      type: 'purchase',
+      name,
+      email,
+      company: company || 'Not provided',
+      plan,
+      devices: devices || 1,
+      billing: billing || 'onetime',
+      totalPrice: totalPrice || 0,
+      message: message || '',
+      status: 'pending',
+      submittedAt: new Date().toISOString()
+    };
+
+    // Store request
+    purchaseRequests.push(request);
+
+    // Plan labels
+    const planLabels = {
+      'individual': 'Individual License ($100)',
+      'corporate': 'Corporate License',
+      'subscription': 'Monthly Subscription ($2/device)'
+    };
+
+    // Send email notification to admin
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
+      to: 'vozicomsystems@gmail.com',
+      subject: `[LoOper Purchase] New ${planLabels[plan]} Request from ${name}`,
+      html: `
+        <h2>New Purchase Request</h2>
+        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Name</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Email</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${email}</td>
+          </tr>
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Company</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${request.company}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Plan</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${planLabels[plan]}</td>
+          </tr>
+          ${plan === 'corporate' || plan === 'subscription' ? `
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Devices</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${devices}</td>
+          </tr>
+          ` : ''}
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Billing</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${billing === 'monthly' ? 'Monthly' : 'One-time'}</td>
+          </tr>
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Total Price</td>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #6d5bd0;">$${totalPrice}</td>
+          </tr>
+          ${message ? `
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; vertical-align: top;">Message</td>
+            <td style="padding: 10px; border: 1px solid #ddd; white-space: pre-wrap;">${message}</td>
+          </tr>
+          ` : ''}
+          <tr style="background-color: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Submitted At</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${request.submittedAt}</td>
+          </tr>
+        </table>
+        <p style="margin-top: 20px; color: #666;">
+          Total purchase requests: ${purchaseRequests.length} | Pending: ${purchaseRequests.filter(r => r.status === 'pending').length}
+        </p>
+        <p style="margin-top: 10px; color: #333; font-weight: bold;">
+          ACTION REQUIRED: Verify this purchase and contact the customer within a few minutes with download/payment instructions.
+        </p>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // Send confirmation email to user
+    const userMailOptions = {
+      from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
+      to: email,
+      subject: 'Your LoOper Purchase Request - Next Steps',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #6d5bd0;">Thank you for your interest, ${name}!</h2>
+          <p>We've received your purchase request for <strong>${planLabels[plan]}</strong>.</p>
+          
+          <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #333;">Request Summary:</h3>
+            <p><strong>Plan:</strong> ${planLabels[plan]}</p>
+            ${plan === 'corporate' || plan === 'subscription' ? `<p><strong>Devices:</strong> ${devices}</p>` : ''}
+            <p><strong>Total:</strong> $${totalPrice}</p>
+          </div>
+
+          <h3 style="color: #333;">What happens next?</h3>
+          <ol style="line-height: 1.8;">
+            <li>Our team will review your request within a few minutes</li>
+            <li>You'll receive a verification email with payment instructions</li>
+            <li>Once payment is confirmed, you'll get your download link and license key</li>
+          </ol>
+
+          <p style="margin-top: 20px;">If you have any questions, simply reply to this email.</p>
+          
+          <p style="margin-top: 30px; color: #666;">
+            Best regards,<br>
+            The LoOper Team
+          </p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(userMailOptions);
+
+    console.log(`Purchase request from ${email} - Plan: ${plan}, Total: $${totalPrice}`);
+
+    res.json({
+      success: true,
+      message: 'Purchase request submitted! Check your email for next steps.'
+    });
+
+  } catch (error) {
+    console.error('Error processing purchase request:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error. Please try again later.'
+    });
+  }
+});
+
 // Get all submissions (for admin use)
 app.get('/api/submissions', (req, res) => {
-  res.json(submissions);
+  res.json({
+    beta: submissions,
+    contact: contactSubmissions,
+    purchases: purchaseRequests
+  });
 });
 
 // Health check endpoint
