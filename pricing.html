@@ -603,9 +603,11 @@
       <h2>Complete Your Purchase</h2>
       <p class="modal-subtitle">Fill in your details and we'll send you payment instructions shortly.</p>
 
-      <form id="purchaseForm" class="modal-form">
+      <form id="purchaseForm" class="modal-form" action="https://formspree.io/f/xzddpgej" method="POST">
         <div id="modalMessage" style="display: none; padding: 12px; border-radius: 6px; margin-bottom: 16px; text-align: center; font-size: 0.9rem;"></div>
 
+        <input type="hidden" name="_subject" value="New LoOper Purchase Request">
+        <input type="hidden" name="form_type" value="purchase_request">
         <input type="hidden" id="modalPlan" name="plan" />
         <input type="hidden" id="modalDevices" name="devices" />
         <input type="hidden" id="modalBilling" name="billing" />
@@ -807,7 +809,7 @@
 
       const submitBtn = document.getElementById('purchaseSubmitBtn');
       const messageDiv = document.getElementById('modalMessage');
-      const formData = new FormData(this);
+      const form = this;
 
       // Disable submit button
       submitBtn.disabled = true;
@@ -815,39 +817,35 @@
       messageDiv.style.display = 'none';
 
       try {
-        const response = await fetch('https://silly-mice-lie.loca.lt/api/purchase', {
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
           method: 'POST',
+          body: formData,
           headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(Object.fromEntries(formData))
+            'Accept': 'application/json'
+          }
         });
 
-        const result = await response.json();
-
-        messageDiv.style.display = 'block';
-        if (result.success) {
+        if (response.ok) {
+          messageDiv.style.display = 'block';
           messageDiv.style.background = 'rgba(76, 175, 80, 0.2)';
           messageDiv.style.border = '1px solid #4CAF50';
           messageDiv.style.color = '#4CAF50';
-          messageDiv.textContent = result.message;
+          messageDiv.textContent = 'Purchase request submitted! Check your email for next steps.';
 
           // Close modal after 3 seconds
           setTimeout(() => {
             closePurchaseModal();
           }, 3000);
         } else {
-          messageDiv.style.background = 'rgba(244, 67, 54, 0.2)';
-          messageDiv.style.border = '1px solid #f44336';
-          messageDiv.style.color = '#f44336';
-          messageDiv.textContent = result.message || 'An error occurred. Please try again.';
+          throw new Error('Form submission failed');
         }
       } catch (error) {
         messageDiv.style.display = 'block';
         messageDiv.style.background = 'rgba(244, 67, 54, 0.2)';
         messageDiv.style.border = '1px solid #f44336';
         messageDiv.style.color = '#f44336';
-        messageDiv.textContent = 'Network error. Please make sure the server is running.';
+        messageDiv.textContent = 'An error occurred. Please try again.';
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit Purchase Request';

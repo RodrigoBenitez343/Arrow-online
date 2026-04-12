@@ -169,8 +169,11 @@
         <li>Free premium features during beta period</li>
       </ul>
 
-      <form id="betaForm" action="/api/beta-register" method="POST">
+      <form id="betaForm" action="https://formspree.io/f/xzddpgej" method="POST">
         <div id="formMessage" style="display: none; padding: 16px; border-radius: 8px; margin-bottom: 20px; text-align: center;"></div>
+
+        <input type="hidden" name="_subject" value="New LoOper Beta Registration">
+        <input type="hidden" name="form_type" value="beta_registration">
 
         <div class="form-group">
           <label for="fullname">Full Name *</label>
@@ -225,46 +228,42 @@
       <script>
         document.getElementById('betaForm').addEventListener('submit', async function(e) {
           e.preventDefault();
-          
+
           const submitBtn = document.getElementById('submitBtn');
           const messageDiv = document.getElementById('formMessage');
-          const formData = new FormData(this);
-          
+          const form = this;
+
           // Disable submit button
           submitBtn.disabled = true;
           submitBtn.textContent = 'Submitting...';
           messageDiv.style.display = 'none';
-          
+
           try {
-            const response = await fetch('https://silly-mice-lie.loca.lt/api/beta-register', {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
               method: 'POST',
+              body: formData,
               headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(Object.fromEntries(formData))
+                'Accept': 'application/json'
+              }
             });
-            
-            const result = await response.json();
-            
-            messageDiv.style.display = 'block';
-            if (result.success) {
+
+            if (response.ok) {
+              messageDiv.style.display = 'block';
               messageDiv.style.background = 'rgba(76, 175, 80, 0.2)';
               messageDiv.style.border = '1px solid #4CAF50';
               messageDiv.style.color = '#4CAF50';
-              messageDiv.textContent = result.message;
-              document.getElementById('betaForm').reset();
+              messageDiv.textContent = 'Registration successful! Check your email for confirmation.';
+              form.reset();
             } else {
-              messageDiv.style.background = 'rgba(244, 67, 54, 0.2)';
-              messageDiv.style.border = '1px solid #f44336';
-              messageDiv.style.color = '#f44336';
-              messageDiv.textContent = result.message || 'An error occurred. Please try again.';
+              throw new Error('Form submission failed');
             }
           } catch (error) {
             messageDiv.style.display = 'block';
             messageDiv.style.background = 'rgba(244, 67, 54, 0.2)';
             messageDiv.style.border = '1px solid #f44336';
             messageDiv.style.color = '#f44336';
-            messageDiv.textContent = 'Network error. Please make sure the server is running.';
+            messageDiv.textContent = 'An error occurred. Please try again.';
           } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Apply for Beta Access';
