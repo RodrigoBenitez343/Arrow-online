@@ -3,1467 +3,636 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LoOper User Guide</title>
+  <title>Arrow — Documentation</title>
+  <meta name="description" content="Arrow documentation: architecture, chains and nodes, execution, recording, playback, the AI stack, agent mode, memory, specialized nodes, and configuration." />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      mermaid.initialize({
-        startOnLoad: true,
-        theme: 'dark',
-        themeVariables: {
-          primaryColor: '#1a1a2e',
-          primaryTextColor: '#e9e3ff',
-          primaryBorderColor: '#6d5bd0',
-          lineColor: '#9e6aff',
-          secondaryColor: '#141428',
-          tertiaryColor: '#0f1020',
-          fontFamily: 'Inter, Arial, sans-serif'
-        }
-      });
-
-      // Click on sidebar link to scroll to section
-      const navLinks = document.querySelectorAll('.docs-sidebar a[href^="#"]');
-      const sections = document.querySelectorAll('.content-section[id]');
-      let isClickScrolling = false;
-
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          e.preventDefault();
-          const targetId = this.getAttribute('href').substring(1);
-          const targetSection = document.getElementById(targetId);
-          if (targetSection) {
-            isClickScrolling = true;
-            // Update active state
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            // Smooth scroll to section
-            targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // Re-enable scroll detection after animation
-            setTimeout(() => { isClickScrolling = false; }, 1000);
-          }
-        });
-      });
-
-      // Scroll-based section highlighting using IntersectionObserver
-      const observerOptions = {
-        root: null,
-        rootMargin: '-20% 0px -70% 0px',
-        threshold: 0
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        if (isClickScrolling) return;
-
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute('id');
-            navLinks.forEach(link => {
-              link.classList.remove('active');
-              if (link.getAttribute('href') === '#' + id) {
-                link.classList.add('active');
-                // Scroll sidebar to keep active item visible
-                link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-              }
-            });
-          }
-        });
-      }, observerOptions);
-
-      sections.forEach(section => observer.observe(section));
-
-      // Set initial active state to first section
-      if (navLinks.length > 0) {
-        navLinks[0].classList.add('active');
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#1a1a1a',
+        primaryTextColor: '#ffffff',
+        primaryBorderColor: '#22d3ee',
+        lineColor: '#0891b2',
+        secondaryColor: '#1a1a1a',
+        tertiaryColor: '#0a0a0a',
+        clusterBkg: '#1a1a1a',
+        clusterBorder: '#22d3ee',
+        edgeLabelBackground: '#1a1a1a',
+        actorBkg: '#1a1a1a',
+        actorBorder: '#22d3ee',
+        actorTextColor: '#ffffff',
+        signalColor: '#7d8187',
+        signalTextColor: '#7d8187',
+        noteBkgColor: '#1a1a1a',
+        noteBorderColor: '#22d3ee',
+        fontFamily: 'Inter, Arial, sans-serif'
       }
     });
   </script>
   <style>
-    .docs-container {
-      display: flex;
-      gap: 24px;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .docs-sidebar {
-      width: 260px;
-      flex-shrink: 0;
-      position: sticky;
-      top: 80px;
-      height: calc(100vh - 100px);
-      overflow-y: auto;
-    }
-    .docs-sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .docs-sidebar li {
-      margin: 4px 0;
-    }
-    .docs-sidebar a {
-      color: #b9a6d6;
-      text-decoration: none;
-      display: block;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-    .docs-sidebar a:hover {
-      background: rgba(109, 91, 208, 0.2);
-      color: #f2eaff;
-    }
-    .docs-sidebar a.active {
-      background: rgba(109, 91, 208, 0.4);
-      color: #f2eaff;
-      border-left: 3px solid var(--accent);
-    }
-    /* Dark mode scrollbar for sidebar */
-    .docs-sidebar::-webkit-scrollbar {
-      width: 8px;
-    }
-    .docs-sidebar::-webkit-scrollbar-track {
-      background: rgba(15, 16, 32, 0.5);
-      border-radius: 4px;
-    }
-    .docs-sidebar::-webkit-scrollbar-thumb {
-      background: rgba(109, 91, 208, 0.5);
-      border-radius: 4px;
-    }
-    .docs-sidebar::-webkit-scrollbar-thumb:hover {
-      background: rgba(109, 91, 208, 0.7);
-    }
-    /* Dark mode scrollbar for main content */
-    ::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(15, 16, 32, 0.8);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(109, 91, 208, 0.5);
-      border-radius: 5px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(109, 91, 208, 0.7);
-    }
-    .docs-sidebar .section-header {
-      color: #f2eaff;
-      font-weight: 600;
-      padding: 12px 12px 6px;
-      margin-top: 8px;
-    }
-    .docs-content {
-      flex: 1;
-      min-width: 0;
-    }
-    .content-section {
-      background: rgba(20, 22, 40, 0.9);
-      border-radius: var(--radius);
-      padding: 32px;
-      margin-bottom: 24px;
-      border: 1px solid rgba(109,91,208,.4);
-    }
-    .content-section h1 {
-      margin: 0 0 16px;
-      font-size: 2rem;
-      color: #f2eaff;
-    }
-    .content-section h2 {
-      margin: 32px 0 16px;
-      font-size: 1.5rem;
-      color: #d8ccff;
-      border-bottom: 1px solid rgba(109,91,208,.3);
-      padding-bottom: 8px;
-    }
-    .content-section h3 {
-      margin: 24px 0 12px;
-      font-size: 1.2rem;
-      color: #d8ccff;
-    }
-    .content-section h4 {
-      margin: 20px 0 10px;
-      font-size: 1.1rem;
-      color: #b9a6d6;
-    }
-    .content-section p {
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.7;
-      margin-bottom: 16px;
-    }
-    .content-section ul, .content-section ol {
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 16px;
-      padding-left: 24px;
-    }
-    .content-section li {
-      margin-bottom: 8px;
-    }
-    .content-section table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      color: var(--muted);
-    }
-    .content-section th {
-      background: rgba(109, 91, 208, 0.2);
-      padding: 12px;
-      text-align: left;
-      color: #d8ccff;
-      font-weight: 600;
-      border-bottom: 2px solid rgba(109,91,208,.4);
-    }
-    .content-section td {
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(109,91,208,.2);
-    }
-    .content-section tr:hover {
-      background: rgba(109, 91, 208, 0.1);
-    }
-    .content-section code {
-      background: rgba(15, 16, 32, 0.8);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 0.9em;
-      color: #9e6aff;
-    }
-    .content-section pre {
-      background: rgba(15, 16, 32, 0.8);
-      padding: 16px;
-      border-radius: 8px;
-      overflow-x: auto;
-      border: 1px solid rgba(109,91,208,.3);
-    }
-    .content-section pre code {
-      background: none;
-      padding: 0;
-    }
-    .image-placeholder {
-      background: rgba(15, 16, 32, 0.8);
-      border: 2px dashed rgba(109,91,208,.4);
-      border-radius: 8px;
-      padding: 40px;
-      text-align: center;
-      color: #b9a6d6;
-      margin: 20px 0;
-    }
-    .note-box {
-      background: rgba(158, 106, 255, 0.1);
-      border-left: 4px solid var(--accent);
-      padding: 16px;
-      margin: 16px 0;
-      border-radius: 0 8px 8px 0;
-    }
-    .note-box p {
-      margin: 0;
-      color: #d8ccff;
-    }
-    .hero-subtitle {
-      font-size: 1.1rem;
-      color: #b9a6d6;
-      margin-bottom: 24px;
-    }
-    @media (max-width: 900px) {
-      .docs-container {
-        flex-direction: column;
-      }
-      .docs-sidebar {
-        width: 100%;
-        position: static;
-        height: auto;
-      }
-    }
+    .docs-container { display: flex; gap: 24px; max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .docs-sidebar { width: 260px; flex-shrink: 0; position: sticky; top: 80px; height: calc(100vh - 100px); overflow-y: auto; }
+    .docs-sidebar ul { list-style: none; padding: 0; margin: 0; }
+    .docs-sidebar li { margin: 3px 0; }
+    .docs-sidebar a { color: #7d8187; text-decoration: none; display: block; padding: 6px 12px; border-radius: 6px; font-size: .9rem; }
+    .docs-sidebar a:hover { background: rgba(31,34,40,.14); color: #ffffff; }
+    .docs-sidebar a.active { background: rgba(31,34,40,.22); color: #ffffff; border-left: 3px solid var(--accent); }
+    .docs-sidebar .section-header { color: #d5d9e2; font-weight: 600; padding: 12px 12px 6px; margin-top: 8px; }
+    .docs-content { flex: 1; min-width: 0; }
+    .content-section { background: rgba(26,26,26,.9); border-radius: var(--radius); padding: 32px; margin-bottom: 24px; border: 1px solid rgba(31,34,40,.3); }
+    .content-section h1 { margin: 0 0 16px; font-size: 2rem; color: #ffffff; }
+    .content-section h2 { margin: 28px 0 14px; font-size: 1.4rem; color: #d5d9e2; border-bottom: 1px solid rgba(31,34,40,.3); padding-bottom: 8px; }
+    .content-section h3 { margin: 20px 0 10px; font-size: 1.1rem; color: #d5d9e2; }
+    .content-section p { color: #7d8187; font-size: 1rem; line-height: 1.7; margin-bottom: 14px; }
+    .content-section ul, .content-section ol { color: #7d8187; line-height: 1.7; margin-bottom: 14px; padding-left: 24px; }
+    .content-section li { margin-bottom: 6px; }
+    .content-section table { width: 100%; border-collapse: collapse; margin: 14px 0; color: #7d8187; }
+    .content-section th { background: rgba(31,34,40,.12); padding: 10px 12px; text-align: left; color: #d5d9e2; border-bottom: 2px solid rgba(31,34,40,.4); }
+    .content-section td { padding: 9px 12px; border-bottom: 1px solid rgba(31,34,40,.18); vertical-align: top; }
+    .content-section code { background: rgba(10,10,10,.8); padding: 2px 6px; border-radius: 4px; font-family: Consolas, Monaco, monospace; font-size: .88em; color: var(--accent); }
+    .note-box { background: rgba(31,34,40,.08); border-left: 4px solid var(--accent); padding: 14px 16px; margin: 14px 0; border-radius: 0 8px 8px 0; }
+    .note-box p { margin: 0; color: #d5d9e2; }
+    .hero-subtitle { font-size: 1.05rem; color: #7d8187; margin-bottom: 20px; }
+    .mermaid { background: rgba(10,10,10,.6); border: 1px solid rgba(31,34,40,.25); border-radius: 10px; padding: 20px; margin: 18px 0; overflow-x: auto; text-align: center; }
+    .mermaid svg { max-width: 100%; height: auto; }
+    @media (max-width: 900px) { .docs-container { flex-direction: column; } .docs-sidebar { width: 100%; position: static; height: auto; } }
   </style>
 </head>
 <body>
   <div class="parallax-bg"></div>
   <header class="site-header">
-    <div class="brand" aria-label="LoOper brand">
-      <span class="logo">LoOper</span>
-      <span class="tag">Driven by and for human goals.</span>
+    <div class="brand" aria-label="Arrow brand">
+      <span class="logo">Arrow</span>
+      <span class="tag">Local AI automation, on your machine.</span>
     </div>
     <nav class="site-nav" aria-label="Main navigation">
       <a href="index.html">Home</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
       <a href="docs.html" class="active">Docs</a>
-      <a href="pricing.html">Pricing</a>
     </nav>
   </header>
 
   <div class="docs-container">
-    <!-- Sidebar Navigation -->
     <aside class="docs-sidebar">
       <ul>
-        <li class="section-header">Getting Started</li>
-        <li><a href="#getting-started">Introduction</a></li>
-        <li><a href="#project-structure">Project Structure</a></li>
-        <li class="section-header">Core Features</li>
-        <li><a href="#recording">Recording Sequences</a></li>
-        <li><a href="#playback">Playback & Execution</a></li>
-        <li><a href="#schedules">Schedules</a></li>
-        <li class="section-header">Node Types</li>
-        <li><a href="#node-types">Overview</a></li>
-        <li><a href="#sequence-node">Sequence Node</a></li>
-        <li><a href="#conditional-node">Conditional Node</a></li>
-        <li><a href="#llm-node">LLM Node</a></li>
-        <li><a href="#tts-node">TTS Node</a></li>
-        <li><a href="#chain-import-node">Chain Import Node</a></li>
-        <li><a href="#code-node">Code Node</a></li>
-        <li class="section-header">Advanced</li>
-        <li><a href="#special-actions">Special Actions</a></li>
-        <li><a href="#node-dialogs">Node Dialogs</a></li>
-        <li><a href="#sandboxing">Sandboxing</a></li>
-        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li class="section-header">Getting started</li>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#capabilities">Capability map</a></li>
+        <li class="section-header">Architecture</li>
+        <li><a href="#architecture">High-level architecture</a></li>
+        <li><a href="#runtime">Runtime topology</a></li>
+        <li class="section-header">Chains</li>
+        <li><a href="#nodes">Node catalog</a></li>
+        <li><a href="#ports">Ports &amp; data flow</a></li>
+        <li><a href="#branching">Branching &amp; loops</a></li>
+        <li class="section-header">Engine</li>
+        <li><a href="#execution">Execution engine</a></li>
+        <li class="section-header">Capture &amp; replay</li>
+        <li><a href="#recording">Recording</a></li>
+        <li><a href="#grounding">Playback &amp; grounding</a></li>
+        <li class="section-header">AI stack</li>
+        <li><a href="#ai-engines">Inference &amp; API</a></li>
+        <li><a href="#retrieval">Retrieval &amp; Laya</a></li>
+        <li><a href="#vision-speech">Vision &amp; speech</a></li>
+        <li class="section-header">Agent mode</li>
+        <li><a href="#agent">System chains &amp; tools</a></li>
+        <li><a href="#orchestrator">Orchestrator</a></li>
+        <li><a href="#deterministic">Deterministic chains</a></li>
+        <li><a href="#input-nodes">Input nodes &amp; goals</a></li>
+        <li class="section-header">Memory &amp; nodes</li>
+        <li><a href="#memory">Memory &amp; context</a></li>
+        <li><a href="#specialized">Specialized nodes</a></li>
+        <li class="section-header">Operations</li>
+        <li><a href="#operations">Scheduling, sandbox &amp; remote</a></li>
+        <li><a href="#export">Export &amp; build</a></li>
+        <li><a href="#configuration">Configuration &amp; data</a></li>
+        <li><a href="#principles">Engineering principles</a></li>
+        <li><a href="#licensing">Licensing</a></li>
       </ul>
     </aside>
 
-    <!-- Main Content -->
     <main class="docs-content">
-      <!-- Hero Section -->
-      <section class="content-section" id="getting-started">
-        <h1>LoOper User Guide</h1>
-        <p class="hero-subtitle">Looper is a desktop-native automation platform for recording, building, and running reliable workflows that can <em>see</em> the screen, <em>reason</em> with local AI, and <em>act</em> through mouse/keyboard control.</p>
-
-        <img src="assets/images/main-app-window.png" alt="LoOper main application window showing the node graph editor with Chains Library on the left, Sequence List on the right, and a visual workflow in the center canvas" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <p>When you launch Looper, you will see the main window with:</p>
+      <section class="content-section" id="introduction">
+        <h1>Arrow Documentation</h1>
+        <p class="hero-subtitle">Arrow is a Windows desktop platform for building, running, and scheduling intelligent automation entirely on local hardware.</p>
+        <p>You record any interaction once, compose it into a visual workflow graph, and execute it deterministically — with local AI, local vision, local OCR, and local speech. No cloud, no telemetry, no per-token fees.</p>
         <ul>
-          <li><strong>Central Canvas</strong>: The node graph editor where you build automation workflows</li>
-          <li><strong>Top Menu Bar</strong>: File operations, settings, and tools</li>
-          <li><strong>Right Toolbar</strong>: Node palette with available node types</li>
-          <li><strong>Node Graph</strong>: Visual representation of your automation workflow</li>
+          <li><strong>Visual automation</strong> — workflows ("chains") are node graphs, not scripts.</li>
+          <li><strong>Deterministic execution</strong> — the graph is a symbolic program; AI is used only at the seams.</li>
+          <li><strong>Agent platform</strong> — Agent Mode turns chains into tools for a local model.</li>
+          <li><strong>Fully on-device</strong> — bundled GGUF models, ONNX vision, PaddleOCR, Piper TTS, Vosk STT.</li>
+          <li><strong>Composable primitives</strong> — approvals are Input nodes plus branch routing; memory is Context nodes plus SQLite.</li>
         </ul>
       </section>
 
-      <!-- Project Structure -->
-      <section class="content-section" id="project-structure">
-        <h2>Project Structure</h2>
-        <p>Looper organizes your work into:</p>
+      <section class="content-section" id="capabilities">
+        <h2>Capability map</h2>
         <table>
-          <thead>
-            <tr>
-              <th>Folder</th>
-              <th>Purpose</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Capability</th><th>What it does</th></tr></thead>
           <tbody>
-            <tr>
-              <td><code>sequences/</code></td>
-              <td>Stored recorded sequences (JSON + screenshots)</td>
-            </tr>
-            <tr>
-              <td><code>chains/</code></td>
-              <td>Chain workflow files that combine sequences and nodes</td>
-            </tr>
+            <tr><td>Node-graph editor</td><td>Author, edit, expand, and run chains.</td></tr>
+            <tr><td>Desktop recorder</td><td>Capture clicks, typing, scrolls, drags, clipboard, screenshots, and UI elements.</td></tr>
+            <tr><td>Web recorder</td><td>DOM-level browser capture via CDP; selector-based sessions.</td></tr>
+            <tr><td>Execution engine</td><td>Dependency-gated scheduler loop over typed nodes.</td></tr>
+            <tr><td>Desktop replay</td><td>Element-first (UIA) + template-matching cascade, OCR conditions.</td></tr>
+            <tr><td>Web replay</td><td>Native-first CDP ladder with a durable shared browser profile.</td></tr>
+            <tr><td>Local AI</td><td>llama.cpp GGUF and Ollama; chat, generate, and embed endpoints.</td></tr>
+            <tr><td>Semantic retrieval</td><td>ComoRAG probe-driven retrieval, embeddings, Graph RAG.</td></tr>
+            <tr><td>Vision &amp; OCR</td><td>Screen understanding, ONNX detection, PaddleOCR.</td></tr>
+            <tr><td>Speech</td><td>Piper TTS and Vosk STT for voice mode.</td></tr>
+            <tr><td>Agent mode</td><td>System-chain-driven agent; chat overlay, phone client.</td></tr>
+            <tr><td>Orchestrator</td><td>Goal loop over mini-brain chains; trace + synthesis.</td></tr>
+            <tr><td>Memory</td><td>In-run context, SQLite persistence, RAG, consolidation.</td></tr>
+            <tr><td>Scheduling</td><td>Once, daily, weekly, interval; in-process runs.</td></tr>
+            <tr><td>RDP sandbox</td><td>Run automation inside an isolated Windows session.</td></tr>
+            <tr><td>Agent export</td><td>Compile a system chain + assets into a standalone .exe.</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- Recording Sequences -->
+      <section class="content-section" id="architecture">
+        <h2>High-level architecture</h2>
+        <p>Arrow is built around three pillars:</p>
+        <ul>
+          <li><strong>Editor</strong> — the graph editor and all runtime surfaces: typed nodes, dialogs, chain library, scheduler UI, agent chat.</li>
+          <li><strong>Player</strong> — the execution engine and all input/output machinery: interpreter, desktop recorder, web recorder/replay, and grounding.</li>
+          <li><strong>AI</strong> — local inference and retrieval: a FastAPI server over llama.cpp and Ollama, embeddings, retrieval, and the Laya decision engine.</li>
+        </ul>
+        <div class="mermaid">
+flowchart TB
+  subgraph UI["Editor"]
+    A["Node graph editor"]
+    B["Chain library + scheduler + agent chat"]
+  end
+  subgraph Engine["Player"]
+    C["Workflow interpreter"]
+    D["Desktop + web recorder"]
+    E["Grounding (UIA, templates, OCR, vision)"]
+  end
+  subgraph AI["AI"]
+    F["FastAPI local API"]
+    G["llama.cpp + Ollama"]
+    H["Embeddings + ComoRAG + Graph RAG"]
+    I["Laya decision engine"]
+  end
+  subgraph Store["Persistence"]
+    J["chains JSON"]
+    K["sequences + web sequences"]
+    L["context.db (SQLite)"]
+  end
+  A --> C
+  B --> C
+  C --> D
+  C --> E
+  C --> F
+  C --> H
+  C --> I
+  F --> G
+  C --> J
+  C --> L
+        </div>
+      </section>
+
+      <section class="content-section" id="runtime">
+        <h2>Runtime topology</h2>
+        <ul>
+          <li><strong>Launcher</strong> — bootstraps the GUI, or runs a <code>.py</code> argument directly (how the sandbox agent and exported agents are spawned).</li>
+          <li><strong>GUI process</strong> — PyQt5 main window; hosts the editor, overlays, scheduler, recorder, and (by default) the FastAPI server.</li>
+          <li><strong>llama.cpp subprocess</strong> — the bundled <code>llama-server.exe</code> (default port 8081) serves GGUF inference.</li>
+          <li><strong>Vision subprocess</strong> — multimodal inference via <code>llama-mtmd-cli</code> with a GGUF + projector pair.</li>
+          <li><strong>Laya engine</strong> — an embedded decision daemon, lazy-launched and released after each burst; every consumer falls back to LLM paths on failure.</li>
+          <li><strong>Exported agents</strong> — standalone executables that embed the app, the system chain, and transitive chains; they run with <code>ARROW_DIRECT_ENGINE=1</code>.</li>
+        </ul>
+        <div class="mermaid">
+flowchart LR
+  L["Launcher"] --> G["GUI process"]
+  G --> A["FastAPI server :8000"]
+  G --> M["llama-server subprocess :8081"]
+  G --> V["llama-mtmd-cli (vision)"]
+  G --> S["Sandbox agent (RDP)"]
+  G -.-> Laya["Laya decision daemon"]
+  G --> X["Exported agent exe"]
+        </div>
+      </section>
+
+      <section class="content-section" id="nodes">
+        <h2>Node catalog</h2>
+        <table>
+          <thead><tr><th>Node</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td>Sequence</td><td>Replay a recorded desktop sequence.</td></tr>
+            <tr><td>Web Sequence</td><td>Replay a recorded browser session.</td></tr>
+            <tr><td>Conditional</td><td>Branch on image / OCR / wait / web conditions.</td></tr>
+            <tr><td>Input</td><td>Value injection, questions, decision routing, media acceptance.</td></tr>
+            <tr><td>LLM</td><td>Local inference: reasoning, tools, vision, structured output, TTS.</td></tr>
+            <tr><td>Chain Import</td><td>Run another chain as a sub-workflow or tool.</td></tr>
+            <tr><td>Form Filler</td><td>Document-grounded multi-field form completion.</td></tr>
+            <tr><td>Code</td><td>Custom Python with JSON in/out.</td></tr>
+            <tr><td>Context</td><td>Persistent cross-chain memory.</td></tr>
+            <tr><td>Handle</td><td>Vision-based click/scroll/zoom grounding.</td></tr>
+            <tr><td>MCP</td><td>Model Context Protocol server tools.</td></tr>
+            <tr><td>Output</td><td>Expose results to the overlay / outside the chain.</td></tr>
+            <tr><td>Orchestrator</td><td>Goal loop over mini-brain chains.</td></tr>
+          </tbody>
+        </table>
+        <p>Chain metadata includes <code>name</code>, <code>description</code>, <code>collection</code> (e.g. <code>System</code>, <code>Tools</code>, <code>Brains</code>), and <code>is_default</code> (marks the default system chain).</p>
+        <h3>Wiring patterns</h3>
+        <p><strong>Record, branch, act.</strong> A recorded sequence feeds a conditional; the chosen branch continues.</p>
+        <div class="mermaid">
+flowchart LR
+  S["Sequence (recorded)"] --> C{"Conditional (image / OCR)"}
+  C -- true --> L["LLM (reason)"]
+  C -- false --> F["Sequence (fallback)"]
+  L --> O["Output"]
+  F --> O
+        </div>
+        <p><strong>LLM tool router.</strong> An LLM node picks one of several tool chains wired to its tools port.</p>
+        <div class="mermaid">
+flowchart LR
+  I["Input (query)"] --> L["LLM (tool router)"]
+  L -- tools port --> T1["Chain Import (web search)"]
+  L -- tools port --> T2["Chain Import (fill form)"]
+  L --> O["Output"]
+        </div>
+        <p><strong>Orchestrator.</strong> An orchestrator routes a goal across mini-brain chains and deterministic chains.</p>
+        <div class="mermaid">
+flowchart LR
+  G["Input (goal)"] --> O["Orchestrator"]
+  O -- brains port --> B1["Brain chain (research)"]
+  O -- brains port --> B2["Brain chain (write)"]
+  O -- chains port --> D["Deterministic chain"]
+  O --> Out["Output + trace"]
+        </div>
+      </section>
+
+      <section class="content-section" id="ports">
+        <h2>Ports &amp; data flow</h2>
+        <p>Every node exposes named ports. Execution flows along <strong>exec edges</strong> (base ports such as <code>output</code> → <code>input</code>); values flow along <strong>data edges</strong> (<code>data</code>, <code>true</code>/<code>false</code>, <code>trace</code>, <code>files</code>, and so on). A data edge never triggers execution; an exec edge never carries values.</p>
+        <ul>
+          <li>Port values are stored per chain and exposed as <code>node_&lt;id&gt;_&lt;port&gt;</code> variables.</li>
+          <li>Chain-to-chain state rides explicit variables such as <code>_chain_input_context</code>; there is no hidden global state.</li>
+          <li>Branch-capable nodes own <code>true</code> / <code>false</code> output ports.</li>
+          <li>A node whose exec edges land only on a router input port (<code>llm.tools</code>, <code>orchestrator.brains</code>) is flagged <code>tool_provider</code> and never runs in the main loop — its router invokes it.</li>
+        </ul>
+        <div class="mermaid">
+flowchart LR
+  I["Input node"] -- "exec edge" --> L["LLM node"]
+  I -- "data edge (value)" --> L
+  L -- "output (exec)" --> O["Output node"]
+  L -. "node_X_data variable" .-> C["Code node"]
+        </div>
+      </section>
+
+      <section class="content-section" id="branching">
+        <h2>Branching &amp; loops</h2>
+        <ul>
+          <li><strong>Branch sweep</strong> — when a branch-capable node resolves, the unchosen branch is marked skipped so merges never stall.</li>
+          <li><strong>Loop-backs</strong> — an Input node re-resolves on every pass, which is how iterative workflows are built with pure topology.</li>
+          <li><strong>Decision re-evaluation</strong> — decision and routed questions are re-evaluated per loop pass.</li>
+        </ul>
+        <div class="mermaid">
+flowchart TB
+  Start["Chain start"] --> Build["Build typed graph"]
+  Build --> Loop["Scheduler loop"]
+  Loop --> Gate{"Any node ready?"}
+  Gate -- yes --> Exec["Execute next ready node"]
+  Exec --> Branch{"Branch-capable node?"}
+  Branch -- yes --> Sweep["Route true / false, skip unchosen branch"]
+  Branch -- no --> Pub["Publish port outputs + variables"]
+  Sweep --> Pub
+  Pub --> Loop
+  Gate -- "none left / stopped" --> Done["Chain complete"]
+        </div>
+      </section>
+
+      <section class="content-section" id="execution">
+        <h2>Execution engine</h2>
+        <h3>Semantics</h3>
+        <ul>
+          <li><strong>Dependency-gated scheduling</strong> — a node runs only when every incoming edge it needs is settled.</li>
+          <li><strong>Tool-provider gating</strong> — chain-import nodes wired to a tool consumer run only when selected.</li>
+          <li><strong>Stop semantics</strong> — a single stop flag is polled everywhere; ESC aborts a run immediately.</li>
+          <li><strong>Fail-closed</strong> — unparseable model answers route to a configured default branch; never a crash, never a silent wrong turn.</li>
+          <li><strong>Serialized model access</strong> — LLM calls share one managed engine and a serialization lock; local inference runs without timeouts.</li>
+        </ul>
+      </section>
+
       <section class="content-section" id="recording">
-        <h2>Recording Sequences</h2>
-        <p>Recording is the process of capturing your mouse clicks, keyboard input, and scrolling into a reusable sequence file.</p>
+        <h2>Recording</h2>
+        <h3>Desktop recorder</h3>
+        <p>Captures, alongside each action, the cropped image of the click target, the Windows UIA element it landed on (ControlType + bounding box), and precise coordinates. Rapid scrolls are grouped into one action; typed text is buffered into one action; clipboard shortcuts are recognized.</p>
+        <h3>Web recorder</h3>
+        <p>Records a CDP session on a real, visible browser. Recordings are stored as <strong>web sequences</strong>: element-driven steps with selector identities, never absolute coordinates. Identity rules favor stable attributes (<code>data-*</code>, ids, text containment) and treat repeated items as entities.</p>
+      </section>
 
-        <h3>How to Record</h3>
-        <ol>
-          <li>Click <strong>Record</strong> in the toolbar or use the menu option</li>
-          <li>Perform your desired actions on screen:
-            <ul>
-              <li>Clicks (left, right, middle)</li>
-              <li>Keyboard typing</li>
-              <li>Scrolling</li>
-              <li>Drag operations</li>
-            </ul>
-          </li>
-          <li>Press <strong>ESC</strong> or click <strong>Stop</strong> to end recording</li>
-          <li>Your sequence is saved automatically to the <code>sequences/</code> folder</li>
-        </ol>
-
-        <img src="assets/images/recording-toolbar.png" alt="LoOper toolbar showing the Record button highlighted in purple, along with Load, Save, Run, Delete, Copy, and Paste buttons" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <h3>Recording Settings</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Setting</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Sequence Name</td>
-              <td>Name for the recorded sequence file</td>
-            </tr>
-            <tr>
-              <td>Screenshots Directory</td>
-              <td>Where click screenshots are stored</td>
-            </tr>
-            <tr>
-              <td>App Context</td>
-              <td>Automatically captures which application was active</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>What Gets Recorded</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Action Type</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>click</code></td>
-              <td>Mouse clicks with coordinates and screenshots</td>
-            </tr>
-            <tr>
-              <td><code>type_string</code></td>
-              <td>Typed text (batched for efficiency)</td>
-            </tr>
-            <tr>
-              <td><code>keystroke</code></td>
-              <td>Special keys (Enter, Tab, etc.)</td>
-            </tr>
-            <tr>
-              <td><code>clipboard</code></td>
-              <td>Copy, Paste, Cut, Select All, Undo, Redo</td>
-            </tr>
-            <tr>
-              <td><code>scroll</code></td>
-              <td>Scroll bursts (multiple scrolls grouped into one action)</td>
-            </tr>
-            <tr>
-              <td><code>drag_drop</code></td>
-              <td>Mouse drag operations</td>
-            </tr>
-            <tr>
-              <td><code>move_to</code></td>
-              <td>Mouse movement (when holding Right-Ctrl)</td>
-            </tr>
-            <tr>
-              <td><code>absolute_click</code></td>
-              <td>Mouse left click at specific coordinates (when holding Right-Shift)</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Smart Recording Features</h3>
+      <section class="content-section" id="grounding">
+        <h2>Playback &amp; grounding</h2>
+        <h3>Desktop replay — two independent locators</h3>
         <ul>
-          <li><strong>Scroll Burst Grouping</strong>: Multiple rapid scroll events are grouped into a single scroll action</li>
-          <li><strong>Text Buffering</strong>: Typed characters are batched into a single <code>type_string</code> action</li>
-          <li><strong>Modifier Shortcuts</strong>: Common shortcuts like Ctrl+C/V/X/A are recognized and recorded as clipboard operations</li>
-          <li><strong>App Context</strong>: Records which application window was active for each action</li>
-          <li><strong>Native Screenshot Capture</strong>: Looper captures screenshots automatically around click coordinates for visual matching during playback</li>
+          <li><strong>Element-first (UIA)</strong> — resolve the recorded element's live bounding box, surviving moved windows, theme/DPI changes, and scrolled lists.</li>
+          <li><strong>Template matching</strong> — multi-scale OpenCV matching within region constraints and confidence thresholds.</li>
+          <li><strong>OCR conditions</strong> — PaddleOCR powers text conditions in Conditional nodes.</li>
+          <li><strong>Human-like behavior</strong> — jittered click targets, curved mouse paths, variable timing.</li>
         </ul>
-
-        <h3>Screenshot Capture</h3>
-        <p>During recording, Looper automatically captures small screenshots (70x70 pixels by default) around each click location. These screenshots are stored in <code>sequences/screenshots/</code> and are used during playback for template matching to find the correct UI element.</p>
-
-        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 20px 0; padding: 16px; background: rgba(15, 16, 32, 0.8); border-radius: 8px; border: 1px solid rgba(109,91,208,.4);">
-                  <img src="assets/images/click-example-1.png" alt="Screenshot capture example 1: UI element click region" style="border-radius: 4px; border: 1px solid rgba(109,91,208,.3);" />
-                  <img src="assets/images/click-example-2.png" alt="Screenshot capture example 2: Folder icon click region" style="border-radius: 4px; border: 1px solid rgba(109,91,208,.3);" />
-                  <img src="assets/images/click-example-3.png" alt="Screenshot capture example 3: Dark UI element click region" style="border-radius: 4px; border: 1px solid rgba(109,91,208,.3);" />
-                  <img src="assets/images/click-example-4.png" alt="Screenshot capture example 4: Brave browser icon click region" style="border-radius: 4px; border: 1px solid rgba(109,91,208,.3);" />
-                  <img src="assets/images/click-example-5.png" alt="Screenshot capture example 5: Chevron up icon click region" style="border-radius: 4px; border: 1px solid rgba(109,91,208,.3);" />
-                  <img src="assets/images/click-example-6.png" alt="Screenshot capture example 6: Menu icon click region" style="border-radius: 4px; border: 1px solid rgba(109,91,208,.3);" />
-                </div>
+        <div class="mermaid">
+flowchart TB
+  Click["Click action"] --> UIA{"UIA element recorded?"}
+  UIA -- yes --> Resolve["Resolve live element"]
+  Resolve -- verified --> Native["Click real element"]
+  UIA -- no --> Tmpl["Template matching"]
+  Resolve -- miss --> Tmpl
+  Tmpl -- found --> Human["Human-like click"]
+  Tmpl -- miss --> Fallback["Fallback ladder"]
+  Fallback -- found --> Human
+  Fallback -- exhausted --> Coords["Recorded coordinates"]
+        </div>
+        <h3>Web replay</h3>
+        <p>One handler class per action type, each running a deterministic ladder: native CDP input first, then in-page JS dispatch, then a locator retry ladder, then reconnect-and-retry. Replay is visible-browser by default with a single durable shared Chrome profile.</p>
+        <h3>Anti-detection &amp; human-like input</h3>
+        <p>Playback reads like a person, not a bot: jittered click targets, curved mouse paths, variable timing, native CDP input (with an in-page JS fallback), and a durable shared browser profile. Web replay never captures your physical cursor.</p>
       </section>
 
-      <!-- Playback and Execution -->
-      <section class="content-section" id="playback">
-        <h2>Playback and Execution</h2>
-        <p>All nodes in Looper (not just sequences) are executed through the <strong>Workflow Interpreter</strong>, which handles:</p>
+      <section class="content-section" id="ai-engines">
+        <h2>Inference &amp; local API</h2>
+        <table>
+          <thead><tr><th>Engine</th><th>Transport</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>llama.cpp</td><td><code>llama-server.exe</code>, port 8081</td><td>GGUF models, GPU offload (Vulkan), embedding mode.</td></tr>
+            <tr><td>Ollama</td><td>HTTP :11434</td><td>Alternative provider, selected by name.</td></tr>
+            <tr><td>llama-mtmd-cli</td><td>subprocess per inference</td><td>Multimodal vision (GGUF + mmproj projector).</td></tr>
+          </tbody>
+        </table>
+        <p>The engine is authoritative about context size — the app caps requests to the model's training context.</p>
+        <h3>Local API surface (FastAPI)</h3>
+        <table>
+          <thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>/health</code>, <code>/models</code></td><td>Liveness and model inventory.</td></tr>
+            <tr><td><code>/chat</code>, <code>/generate</code></td><td>Unified chat/generation to the active provider.</td></tr>
+            <tr><td><code>/embeddings</code></td><td>Embedding vectors.</td></tr>
+            <tr><td><code>/llamacpp/*</code></td><td>Direct llama.cpp lifecycle + inference.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="content-section" id="retrieval">
+        <h2>Retrieval &amp; Laya</h2>
+        <h3>Semantic retrieval</h3>
         <ul>
-          <li>Sequential execution of nodes in dependency order</li>
-          <li>Conditional branching based on true/false outputs</li>
-          <li>Error handling and retries</li>
-          <li>Variable passing between nodes</li>
+          <li><strong>ComoRAG</strong> — probe-driven retrieval: intent, targeted probes, retrieve, then synthesize against verbatim chunks.</li>
+          <li><strong>Graph RAG</strong> — surfaces relevant past knowledge to reasoning nodes and records execution fragments.</li>
         </ul>
-
-        <h3>How Playback Works</h3>
-        <ol>
-          <li><strong>Start</strong>: The workflow interpreter loads the chain file</li>
-          <li><strong>Node Execution</strong>: Each node is executed in order based on connections</li>
-          <li><strong>Branching</strong>: Conditional nodes route execution to different branches</li>
-          <li><strong>Completion</strong>: Chain finishes or ESC cancels execution</li>
-        </ol>
-
-        <h3>Visual Matching</h3>
-        <p>Looper uses <strong>template matching</strong> to find UI elements reliably:</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Method</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Template Match</td>
-              <td>Finds the screenshot image on screen</td>
-            </tr>
-            <tr>
-              <td>Multi-Scale</td>
-              <td>Handles size variations of UI elements</td>
-            </tr>
-            <tr>
-              <td>Region Search</td>
-              <td>Limits search to a specific screen area</td>
-            </tr>
-            <tr>
-              <td>OCR Trigger</td>
-              <td>Waits for text to appear using optical character recognition</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Stopping Execution</h3>
-        <p>Press <strong>ESC</strong> at any time to cancel execution safely.</p>
+        <h3>Laya decision engine</h3>
+        <p>An embedded typed-decision model (noul / choice / score questions answered in one encoder pass) used by default for the orchestrator picker, input-node decisions, retrieval fact curation, and form-filler field judging. It runs as a lazy-launched daemon and is always optional — every consumer falls back to the LLM path on failure. <code>LOOPER_LAYA=off</code> forces LLM-only paths.</p>
       </section>
 
-      <!-- Schedules -->
-      <section class="content-section" id="schedules">
-        <h2>Schedules</h2>
-        <p>Schedules allow you to automatically run your automation chains at specific times.</p>
-
-        <h3>Schedule Types</h3>
+      <section class="content-section" id="vision-speech">
+        <h2>Vision &amp; speech</h2>
         <table>
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Description</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
           <tbody>
-            <tr>
-              <td><strong>Once</strong></td>
-              <td>Run a single time at a specified date/time</td>
-            </tr>
-            <tr>
-              <td><strong>Daily</strong></td>
-              <td>Run every day at a specified time</td>
-            </tr>
-            <tr>
-              <td><strong>Weekly</strong></td>
-              <td>Run on specific days of the week</td>
-            </tr>
-            <tr>
-              <td><strong>Interval</strong></td>
-              <td>Run every N minutes/hours</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Creating a Schedule</h3>
-        <ol>
-          <li>Open <strong>Scheduler Manager</strong> from the menu</li>
-          <li>Click <strong>Add Schedule</strong></li>
-          <li>Configure:
-            <ul>
-              <li><strong>Name</strong>: Descriptive name for the schedule</li>
-              <li><strong>Type</strong>: Once, Daily, Weekly, or Interval</li>
-              <li><strong>When</strong>: The time/date specification</li>
-              <li><strong>Chain</strong>: Select which chain to run</li>
-            </ul>
-          </li>
-          <li>Enable/disable the schedule using the toggle</li>
-        </ol>
-
-        <img src="assets/images/scheduler-dialog.png" alt="LoOper Scheduler Manager dialog showing the schedule list with columns for Enabled, Name, Type, When, and Next Run, plus Add Schedule, Refresh, and Close buttons" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <h3>Schedule Management</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Enable/Disable</td>
-              <td>Toggle schedules on/off without deleting</td>
-            </tr>
-            <tr>
-              <td>Run Now</td>
-              <td>Manually trigger a schedule immediately</td>
-            </tr>
-            <tr>
-              <td>Edit</td>
-              <td>Modify schedule parameters</td>
-            </tr>
-            <tr>
-              <td>Delete</td>
-              <td>Remove a schedule permanently</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Persistence</h3>
-        <p>Schedules are saved to <code>schedules.json</code> and persist across application restarts. The scheduler runs as a background service that checks every 10 seconds for due schedules.</p>
-      </section>
-
-      <!-- Node Types -->
-      <section class="content-section" id="node-types">
-        <h2>Node Types</h2>
-        <p>Nodes are the building blocks of automation workflows. Each node type performs a specific function.</p>
-
-        <h3>Node Colors Quick Reference</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Node Type</th>
-              <th>Color</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Sequence Node</td>
-              <td>Dark Grey (#121212)</td>
-            </tr>
-            <tr>
-              <td>Conditional Node</td>
-              <td>Purple (#7B61FF)</td>
-            </tr>
-            <tr>
-              <td>LLM Node</td>
-              <td>Orange (#FF6B35)</td>
-            </tr>
-            <tr>
-              <td>TTS Node</td>
-              <td>Cyan (#00CED1)</td>
-            </tr>
-            <tr>
-              <td>Chain Import Node</td>
-              <td>Green (#32CD32)</td>
-            </tr>
-            <tr>
-              <td>Form Filler Node</td>
-              <td>Plum (#DDA0DD)</td>
-            </tr>
-            <tr>
-              <td>Code Node</td>
-              <td>Yellow (#F1C40F)</td>
-            </tr>
+            <tr><td>Screen VLM</td><td>LFM2.5-VL 450M + projector (Handle node scene understanding).</td></tr>
+            <tr><td>Object detection</td><td>ONNX YOLO-based detector for UI element detection.</td></tr>
+            <tr><td>OCR</td><td>PaddleOCR (det/rec/cls) for text conditions and documents.</td></tr>
+            <tr><td>Document extraction</td><td>PyPDF2 (PDF), python-docx (Word), plain text.</td></tr>
+            <tr><td>TTS</td><td>Piper ONNX voices.</td></tr>
+            <tr><td>STT</td><td>Vosk offline speech-to-text for voice mode.</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- Sequence Node -->
-      <section class="content-section" id="sequence-node">
-        <h3>Sequence Node</h3>
-        <p><strong>Purpose</strong>: Executes a recorded sequence file.</p>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>sequence_file</code></td>
-              <td>Path to the sequence JSON file</td>
-            </tr>
-            <tr>
-              <td><code>loop_count</code></td>
-              <td>Number of times to repeat the sequence</td>
-            </tr>
-            <tr>
-              <td><code>extra_delay</code></td>
-              <td>Additional delay between iterations (seconds)</td>
-            </tr>
-            <tr>
-              <td><code>use_app_opened</code></td>
-              <td>Whether to focus the recorded app before playing</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p><strong>Color</strong>: Dark Grey<br>
-        <strong>Ports</strong>: 1 input, 1 output (multi-output capable)</p>
-
-        <img src="assets/images/sequence-node.png" alt="LoOper Sequence Node showing sequence1.json with input/output ports, record button, play button, and menu icon on a dark grid canvas" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-      </section>
-
-      <!-- Conditional Node -->
-      <section class="content-section" id="conditional-node">
-        <h3>Conditional Node</h3>
-        <p><strong>Purpose</strong>: Waits for conditions or creates branching logic based on screen state or code evaluation.</p>
-
-        <h4>Condition Types</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Condition Type</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Code Condition</strong></td>
-              <td>Execute Python code that returns True/False</td>
-            </tr>
-            <tr>
-              <td><strong>Presence Trigger</strong></td>
-              <td>Wait until an image appears on screen (True output), or continue immediately if not found (False output)</td>
-            </tr>
-            <tr>
-              <td><strong>OCR Trigger</strong></td>
-              <td>Wait until specific text is detected</td>
-            </tr>
-            <tr>
-              <td><strong>Layout Match</strong></td>
-              <td>Wait for image at a specific screen region with exact position</td>
-            </tr>
-            <tr>
-              <td><strong>Wait Time</strong></td>
-              <td>Wait for a specified duration</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="note-box">
-          <p><strong>Note:</strong> Absence behavior is handled by connecting nodes to the False output of a Presence Trigger, allowing you to branch based on whether an image is found or not.</p>
-        </div>
-
-        <h4>Conditional Loop Types</h4>
-        <p>Looper supports conditional loops that execute a sequence repeatedly based on conditions. Multiple conditionals can be stacked to create complex logic:</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Loop Type</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>while_present</strong></td>
-              <td>Loop while an image/condition is present</td>
-            </tr>
-            <tr>
-              <td><strong>until_present</strong></td>
-              <td>Loop until an image/condition appears</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="note-box">
-          <p><strong>Note:</strong> For "while absent" or "until absent" logic, stack conditionals by connecting the False output of a Presence Trigger to another conditional node.</p>
-        </div>
-
-        <p><strong>Color</strong>: Purple (#7B61FF)<br>
-        <strong>Ports</strong>: 1 input, 2 outputs (True/False for conditionals)</p>
-
-        <img src="assets/images/conditional-node.png" alt="LoOper Conditional Node in purple showing input port, True output (green), False output (red), play button, and menu icon" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <h4>Creating Image Triggers</h4>
-        <p>Looper provides a built-in screenshot capture tool for creating image-based triggers:</p>
-        <ol>
-          <li>Click <strong>Capture...</strong> in the trigger dialog</li>
-          <li>Looper minimizes the window and freezes the screen</li>
-          <li>Draw a rectangle around the target area</li>
-          <li>The screenshot is automatically saved and path inserted</li>
-        </ol>
-
-        <img src="assets/images/trigger-config-dialog.png" alt="LoOper Trigger Configuration dialog showing Image Path field, Capture button, Browse button, and Confidence slider set to 0.80" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-      </section>
-
-      <!-- LLM Node -->
-      <section class="content-section" id="llm-node">
-        <h3>LLM Node</h3>
-        <p><strong>Purpose</strong>: Integrates local AI (Ollama) for data ingestion, manipulation, dynamic text generation, and analysis. The LLM node is not just for decision making - it supports multiple use cases.</p>
-
-        <h4>Input Sources</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>None</td>
-              <td>Direct prompt (no input processing)</td>
-            </tr>
-            <tr>
-              <td>OCR</td>
-              <td>Extract text from screen using optical character recognition</td>
-            </tr>
-            <tr>
-              <td>Previous Node</td>
-              <td>Use output from the previous node in the chain</td>
-            </tr>
-            <tr>
-              <td>Clipboard</td>
-              <td>Use current clipboard content</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h4>Model Configuration</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>model</code></td>
-              <td>Ollama model to use (e.g., llama3.2:latest)</td>
-            </tr>
-            <tr>
-              <td><code>temperature</code></td>
-              <td>Response randomness (0.0-2.0)</td>
-            </tr>
-            <tr>
-              <td><code>max_tokens</code></td>
-              <td>Maximum response length</td>
-            </tr>
-            <tr>
-              <td><code>api_url</code></td>
-              <td>Ollama API endpoint (defaults to localhost:11434)</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h4>Quick Templates</h4>
-        <p>LLM nodes include templates for common tasks:</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Template</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Information Extraction</td>
-              <td>OCR + LLM for data extraction</td>
-            </tr>
-            <tr>
-              <td>Form Filling</td>
-              <td>Vision + LLM for form completion</td>
-            </tr>
-            <tr>
-              <td>Data Processing Chain</td>
-              <td>Transform and process data</td>
-            </tr>
-            <tr>
-              <td>Text Analysis</td>
-              <td>Analyze and categorize text</td>
-            </tr>
-            <tr>
-              <td>Content Summarization</td>
-              <td>Summarize content</td>
-            </tr>
-            <tr>
-              <td>Tool Selection</td>
-              <td>LLM-powered decision making</td>
-            </tr>
-            <tr>
-              <td>Python Code Generation</td>
-              <td>Generate Python code</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p><strong>Color</strong>: Orange (#FF6B35)<br>
-        <strong>Ports</strong>: 1 input, 1 output</p>
-
-        <img src="assets/images/llm-node.png" alt="LoOper LLM Node in orange showing multiple input ports, output ports, play button, and menu icon with the node palette visible on the right" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-      </section>
-
-      <!-- TTS Node -->
-      <section class="content-section" id="tts-node">
-        <h3>TTS Node</h3>
-        <p><strong>Purpose</strong>: Speaks text aloud using text-to-speech.</p>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>text</code></td>
-              <td>Text to speak</td>
-            </tr>
-            <tr>
-              <td><code>language</code></td>
-              <td>Language code (en, es, fr, de, etc.)</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p><strong>Color</strong>: Cyan (#00CED1)<br>
-        <strong>Ports</strong>: 1 input, 1 output</p>
-
-        <img src="assets/images/tts-node.png" alt="LoOper TTS Node in cyan showing input port, output port, play button, and menu icon on a dark grid canvas" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-      </section>
-
-      <!-- Chain Import Node -->
-      <section class="content-section" id="chain-import-node">
-        <h3>Chain Import Node</h3>
-        <p><strong>Purpose</strong>: Embeds another chain as a subgraph, enabling workflow composition and reuse.</p>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>chain_file</code></td>
-              <td>Path to the chain JSON to import</td>
-            </tr>
-            <tr>
-              <td><code>import_mode</code></td>
-              <td>full, sequences_only, or nodes_only</td>
-            </tr>
-            <tr>
-              <td><code>prefix</code></td>
-              <td>Prefix for imported node names</td>
-            </tr>
-            <tr>
-              <td><code>loop_count</code></td>
-              <td>Times to execute the imported chain</td>
-            </tr>
-            <tr>
-              <td><code>extra_delay</code></td>
-              <td>Delay between loop iterations</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p><strong>Color</strong>: Green (#32CD32)<br>
-        <strong>Ports</strong>: 1 input, 1 output</p>
-
-        <img src="assets/images/chain-import-node.png" alt="LoOper Chain Import Node in green with yellow border showing input port, output port, import icon, play button, and menu icon" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-      </section>
-
-      <!-- Code Node -->
-      <section class="content-section" id="code-node">
-        <h3>Code Node</h3>
-        <p><strong>Purpose</strong>: Executes custom Python code during workflow execution.</p>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>code</code></td>
-              <td>Python code to execute</td>
-            </tr>
-            <tr>
-              <td><code>source_type</code></td>
-              <td>"inline" or "file"</td>
-            </tr>
-            <tr>
-              <td><code>file_path</code></td>
-              <td>Path to Python file (if file source)</td>
-            </tr>
-            <tr>
-              <td><code>timeout</code></td>
-              <td>Maximum execution time (seconds)</td>
-            </tr>
-            <tr>
-              <td><code>output_variable</code></td>
-              <td>Variable name for result</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p><strong>Available Variables</strong>:</p>
+      <section class="content-section" id="agent">
+        <h2>Agent mode — system chains &amp; tools</h2>
+        <p>Agent mode has no hardcoded behavior. It requires a <strong>system chain</strong> (a chain with <code>collection: "System"</code>) that defines the entire cognitive architecture: Input nodes receive the query, LLM nodes reason, Context nodes remember, Chain Import nodes act as tools, Output nodes surface the answer. Multiple system chains = multiple named agents.</p>
         <ul>
-          <li><code>input_data</code> - Data from previous node</li>
-          <li><code>args</code> - Additional arguments</li>
-          <li><code>result</code> - Assign your output to this variable</li>
+          <li><strong>Dispatch</strong> — selects the default system chain and runs it through the same engine as manual playback.</li>
+          <li><strong>Chains-as-tools</strong> — any chain connected to an LLM's tools port is selectable at runtime; tool descriptions are derived at call time.</li>
+          <li><strong>Stepped protocol</strong> — the router picks a tool by name, then each agent-modifiable Input node extracts its own single value. This is why a 3B model suffices.</li>
+          <li><strong>Ask-user</strong> — any Input node with a prompt pauses the run and asks through the richest available channel.</li>
         </ul>
-
-        <p><strong>Color</strong>: Yellow (#F1C40F)<br>
-        <strong>Ports</strong>: 1 input, 1 output</p>
-
-        <img src="assets/images/code-node.png" alt="LoOper Code Node in yellow showing input port, output port, play button, and menu icon on a dark grid canvas" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-      </section>
-
-      <!-- Recording Special Actions -->
-      <section class="content-section" id="special-actions">
-        <h2>Recording Special Actions</h2>
-
-        <h3>Modifier Key Combinations</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Action</th>
-              <th>Recording Method</th>
-              <th>Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Ctrl+Click</strong></td>
-              <td>Hold Ctrl + Left Click</td>
-              <td>Recorded as <code>ctrl_click</code> type</td>
-            </tr>
-            <tr>
-              <td><strong>Shift+Click</strong></td>
-              <td>Hold Shift + Left Click</td>
-              <td>Recorded as <code>shift_click</code> type</td>
-            </tr>
-            <tr>
-              <td><strong>Absolute Click</strong></td>
-              <td>Hold Right-Shift + Left Click</td>
-              <td>Recorded as <code>absolute_click</code> (ignores offsets)</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Clipboard Operations</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Shortcut</th>
-              <th>Recorded As</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Ctrl+C (Copy)</td>
-              <td><code>clipboard</code> with operation "c"</td>
-            </tr>
-            <tr>
-              <td>Ctrl+V (Paste)</td>
-              <td><code>clipboard</code> with operation "v"</td>
-            </tr>
-            <tr>
-              <td>Ctrl+X (Cut)</td>
-              <td><code>clipboard</code> with operation "x"</td>
-            </tr>
-            <tr>
-              <td>Ctrl+A (Select All)</td>
-              <td><code>clipboard</code> with operation "a"</td>
-            </tr>
-            <tr>
-              <td>Ctrl+Z (Undo)</td>
-              <td><code>clipboard</code> with operation "z"</td>
-            </tr>
-            <tr>
-              <td>Ctrl+Y (Redo)</td>
-              <td><code>clipboard</code> with operation "y"</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Mouse Drag Recording</h3>
-        <ol>
-          <li>Press and hold left mouse button at start position</li>
-          <li>Drag to end position</li>
-          <li>Release</li>
-        </ol>
-        <p><strong>Result</strong>: Recorded as <code>drag_drop</code> action with <code>from</code> and <code>to</code> coordinates.</p>
-
-        <h3>Right-Ctrl Mouse Movement</h3>
-        <p>Holding <strong>Right-Ctrl</strong> while moving the mouse records a <code>move_to</code> action. This is useful for positioning the cursor without performing a click.</p>
-      </section>
-
-      <!-- Node Dialogs Reference -->
-      <section class="content-section" id="node-dialogs">
-        <h2>Node Dialogs Reference</h2>
-        <p>Each node type has a configuration dialog accessible via double-click or context menu.</p>
-
-        <h3>Sequence Node Dialog</h3>
-        <img src="assets/images/sequence-properties-dialog.png" alt="Sequence Properties dialog showing Loop Count, Extra Delay fields, and Use recorded app context checkbox" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <table>
-          <thead>
-            <tr>
-              <th>Field</th>
-              <th>Effect on Behavior</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Loop Count</strong></td>
-              <td>Number of times the sequence repeats. Higher values = more repetitions.</td>
-            </tr>
-            <tr>
-              <td><strong>Extra Delay</strong></td>
-              <td>Wait time (seconds) added between each loop iteration. Use for rate limiting or waiting for UI updates.</td>
-            </tr>
-            <tr>
-              <td><strong>Use App Opened</strong></td>
-              <td>When enabled, the player will attempt to focus and activate the application that was active when the sequence was recorded before playback begins.</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Conditional Node Dialog</h3>
-        <img src="assets/images/conditional-dialog.png" alt="Advanced Conditions dialog showing Code Condition section with Enable toggle, code editor, Timeout field, and Presence Triggers section" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <h4>Code Condition Section</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Field</th>
-              <th>Effect on Behavior</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Enable</strong></td>
-              <td>Toggle code condition evaluation</td>
-            </tr>
-            <tr>
-              <td><strong>Code</strong></td>
-              <td>Python code that must return True/False. Access input via <code>input_data</code> variable.</td>
-            </tr>
-            <tr>
-              <td><strong>Timeout (s)</strong></td>
-              <td>Maximum time allowed for code execution</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h4>Presence Triggers Section</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Field</th>
-              <th>Effect on Behavior</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Add Presence Trigger</strong></td>
-              <td>Add an image that must be visible for the condition to pass</td>
-            </tr>
-            <tr>
-              <td><strong>Confidence</strong></td>
-              <td>Match threshold (0.1-1.0, higher = stricter)</td>
-            </tr>
-            <tr>
-              <td><strong>Timeout</strong></td>
-              <td>Maximum wait time; if 0, waits indefinitely</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>LLM Node Dialog</h3>
-        <img src="assets/images/llm-config-dialog.png" alt="LLM Node Configuration dialog showing Basic tab with Model selection, API URL, Temperature, Max Tokens, Output Variable, and Quick Templates sections" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <h4>Basic Tab</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Field</th>
-              <th>Effect on Behavior</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Model</strong></td>
-              <td>Ollama model for inference</td>
-            </tr>
-            <tr>
-              <td><strong>Temperature</strong></td>
-              <td>Response randomness (0=deterministic, 2=random)</td>
-            </tr>
-            <tr>
-              <td><strong>Max Tokens</strong></td>
-              <td>Maximum response length</td>
-            </tr>
-            <tr>
-              <td><strong>Output Variable</strong></td>
-              <td>Variable name to store response</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Chain Import Dialog</h3>
-        <img src="assets/images/chain-import-dialog.png" alt="Chain Import Configuration dialog showing Import Mode, Node Prefix, Loop Count, Extra Delay fields, and Sandbox Execution toggles" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <table>
-          <thead>
-            <tr>
-              <th>Field</th>
-              <th>Effect on Behavior</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Chain File</strong></td>
-              <td>Path to the chain JSON to embed</td>
-            </tr>
-            <tr>
-              <td><strong>Import Mode</strong></td>
-              <td>full = all nodes, sequences_only = only sequence nodes, nodes_only = only logic nodes</td>
-            </tr>
-            <tr>
-              <td><strong>Node Prefix</strong></td>
-              <td>Added to all imported node names to prevent conflicts</td>
-            </tr>
-            <tr>
-              <td><strong>Run in Sandbox</strong></td>
-              <td>Execute inside a private RDP session</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Code Node Dialog</h3>
-        <img src="assets/images/code-node-dialog.png" alt="Code Node Configuration dialog showing AI Generator, Code Editor, and Settings tabs with Python code editor" style="max-width: 100%; border-radius: 8px; border: 1px solid rgba(109,91,208,.4); margin: 20px 0;" />
-
-        <table>
-          <thead>
-            <tr>
-              <th>Tab</th>
-              <th>Field</th>
-              <th>Effect on Behavior</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>AI Generator</strong></td>
-              <td>Model</td>
-              <td>Ollama model for code generation</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>Prompt</td>
-              <td>Description of desired code functionality</td>
-            </tr>
-            <tr>
-              <td><strong>Editor</strong></td>
-              <td>Code</td>
-              <td>Python source code to execute</td>
-            </tr>
-            <tr>
-              <td><strong>Settings</strong></td>
-              <td>Source Type</td>
-              <td>"inline" for typed code, "file" for external .py file</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>Timeout</td>
-              <td>Maximum execution time in seconds</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Sandboxing -->
-      <section class="content-section" id="sandboxing">
-        <h2>Sandboxing</h2>
-        <p>Sandboxing in Looper uses <strong>RDPWrap</strong> to give the automation agent its own private Windows session, allowing background task execution without interfering with the user's active desktop.</p>
-
-        <h3>How RDP Sandbox Works</h3>
-        <ol>
-          <li><strong>RDPWrap Installation</strong>: Enables multiple concurrent RDP sessions on Windows</li>
-          <li><strong>Agent User</strong>: Creates a dedicated user account (<code>LooperAgent</code>) for the agent</li>
-          <li><strong>Private Session</strong>: The agent runs in a separate RDP session that doesn't affect the user's active desktop</li>
-          <li><strong>Communication</strong>: Looper communicates with the agent via HTTP API</li>
-        </ol>
-
-        <h3>Architecture</h3>
-        <div class="mermaid-container" style="background: rgba(15, 16, 32, 0.8); border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
-          <pre class="mermaid">
-graph LR
-    subgraph UserDesktop["User's Desktop"]
-        LooperGUI["Looper GUI"]
-        AgentBridge["Agent Bridge"]
-        HTTPAPI["HTTP API localhost"]
-    end
-
-    subgraph PrivateSession["LooperAgent Private RDP Session"]
-        AgentHandler["Agent Handler"]
-        ScreenCapture["Screen Capture"]
-        AppUnderTest["Application Under Test"]
-    end
-
-    LooperGUI --&gt; AgentBridge
-    AgentBridge --&gt; HTTPAPI
-    HTTPAPI --&gt; AgentBridge
-    AgentBridge --&gt; LooperGUI
-
-    HTTPAPI -. RDP Session Communication .-&gt; AgentHandler
-
-    AgentHandler --&gt; ScreenCapture
-    ScreenCapture --&gt; AgentHandler
-    ScreenCapture --&gt; AppUnderTest
-    AppUnderTest --&gt; ScreenCapture
-          </pre>
+        <div class="mermaid">
+sequenceDiagram
+  participant U as User
+  participant O as Chat overlay
+  participant R as Chain router
+  participant S as System chain
+  participant L as LLM node
+  participant T as Tool chain
+  U->>O: query
+  O->>R: handle request
+  R->>S: run system chain
+  S->>L: reasoning turn
+  L->>T: tool picked by name
+  T-->>L: tool result
+  L-->>S: final answer
+  S-->>O: output + rating
+  O-->>U: answer
         </div>
-
-        <h3>Agent Actions</h3>
-        <p>The sandbox agent supports these actions via HTTP POST:</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Action</th>
-              <th>Parameters</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>click</code></td>
-              <td>x, y, button</td>
-              <td>Move to (x,y) and click</td>
-            </tr>
-            <tr>
-              <td><code>type</code></td>
-              <td>text</td>
-              <td>Type text string</td>
-            </tr>
-            <tr>
-              <td><code>hotkey</code></td>
-              <td>keys[]</td>
-              <td>Press key combination</td>
-            </tr>
-            <tr>
-              <td><code>screenshot</code></td>
-              <td>(none)</td>
-              <td>Capture and return screen as base64 PNG</td>
-            </tr>
-            <tr>
-              <td><code>scroll</code></td>
-              <td>amount</td>
-              <td>Scroll by amount (negative = down)</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Sandbox vs Direct Execution</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Aspect</th>
-              <th>Direct Execution</th>
-              <th>RDP Sandbox</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Isolation</td>
-              <td>None - runs on host</td>
-              <td>Full isolation in separate RDP session</td>
-            </tr>
-            <tr>
-              <td>User Interference</td>
-              <td>Can interrupt user's work</td>
-              <td>Agent works independently</td>
-            </tr>
-            <tr>
-              <td>Speed</td>
-              <td>Faster</td>
-              <td>Slower (session overhead)</td>
-            </tr>
-            <tr>
-              <td>Use Case</td>
-              <td>Trusted, quick tasks</td>
-              <td>Background agents, long-running tasks</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Debugging Sandbox Issues</h3>
-        <p>If sandbox fails to start:</p>
-        <ol>
-          <li>Ensure RDPWrap is installed: Check <code>C:\Users\%USERNAME%\AppData\Local\LoOper\RDPWrap</code> or reinstall LoOper</li>
-          <li>Check that <code>LooperAgent</code> user exists</li>
-          <li>Verify the user is in Remote Desktop Users and Administrators groups</li>
-          <li>Check <code>agent_info.json</code> for connection details</li>
-        </ol>
       </section>
 
-      <!-- Troubleshooting -->
-      <section class="content-section" id="troubleshooting">
-        <h2>Troubleshooting</h2>
+      <section class="content-section" id="orchestrator">
+        <h2>Orchestrator</h2>
+        <p>The default system chain ships with an Orchestrator node as its root: several mini-brain chains are wired to its <code>brains</code> port, and the orchestrator loops toward a goal — it scopes one step at a time and asks the picked specialist brain to run it.</p>
+        <ul>
+          <li><strong>Three inputs to every decision</strong> — the goal, what was done (step result + trace), and the world now (observed state digest).</li>
+          <li><strong>Picker</strong> — one strictly-parsed token (worker number, <code>DONE</code>, <code>ASK</code>), or the Laya engine with zero parsing.</li>
+          <li><strong>Verification</strong> — a per-step verdict judges whether the step accomplished what it was asked.</li>
+          <li><strong>Guards</strong> — step cap, no-progress detection, and a stop flag between steps.</li>
+          <li><strong>Synthesis</strong> — a final short LLM pass turns the trace into a plain-language answer.</li>
+        </ul>
+        <div class="mermaid">
+flowchart TB
+  G["Goal arrives"] --> W["Observe world (page + window)"]
+  W --> P{"Picker: next step"}
+  P -- worker --> Sc["Scope one instruction"]
+  Sc --> R["Run mini brain"]
+  R --> V["Collect result + verify"]
+  V --> Guard{"Stop or progress?"}
+  Guard -- continuing --> W
+  Guard -- cap --> Synth["Synthesize answer from trace"]
+  P -- DONE --> Synth
+  P -- ASK --> Q{"User channel?"}
+  Q -- yes --> V
+  Q -- no --> B["Blocked, park goal"]
+  Synth --> Out["Output + trace"]
+        </div>
+      </section>
+
+      <section class="content-section" id="deterministic">
+        <h2>Deterministic chains</h2>
+        <p>The orchestrator's second input port carries <strong>deterministic chains</strong>: orchestrator-free compositions that answer a known request end to end with no routing inference. One rule decides which kind a chain is — does it contain an orchestrator, directly or through its imports?</p>
+        <ul>
+          <li>A verified run can be frozen into a <strong>learned chain</strong> (composition + <code>routing.examples</code>), wired to the <code>chains</code> port.</li>
+          <li><strong>Self-improving</strong> — learned chains accumulate on the <code>chains</code> port, so the agent's library grows with every verified run.</li>
+          <li>Partial fits are assembled from existing artifacts into one continuous chain and run as a single dispatch.</li>
+          <li>The gate asks the step question per directive, judged against the current directive with a confidence floor plus object-name alignment.</li>
+        </ul>
+      </section>
+
+      <section class="content-section" id="input-nodes">
+        <h2>Input nodes &amp; persistent goals</h2>
+        <h3>Input node v2</h3>
+        <ul>
+          <li><strong>Decision mode</strong> — a natural-language criterion evaluated with one strictly-contracted model turn or the Laya noul evaluator.</li>
+          <li><strong>Question modes</strong> — free text, yes/no, or a choice list; answers are normalized against the options.</li>
+          <li><strong>Accepted media</strong> — text, images, and documents (PDF/Word/txt) ride the <code>data</code> port.</li>
+        </ul>
+        <h3>Persistent goals</h3>
+        <p>With <code>use_goal_ledger</code> enabled, a blocked goal parks itself (<code>blocked</code> port) and resumes on the next activation — wake-driven persistence, not a busy daemon. Schedules create the wakes.</p>
+      </section>
+
+      <section class="content-section" id="memory">
+        <h2>Memory &amp; context</h2>
+        <ul>
+          <li><strong>In-run state</strong> — named-port values plus a turn-based history per chain.</li>
+          <li><strong>Persistence</strong> — Context nodes write append-only turns to SQLite (<code>data/context.db</code>) with per-(chain, node) rolling caps.</li>
+          <li><strong>Retrieval</strong> — Graph RAG surfaces relevant past knowledge; ComoRAG consolidates large sources into grounded facts.</li>
+          <li><strong>Inspection</strong> — the agent settings dialog renders a goal-relationship graph with reviewable, correctable, clearable memory.</li>
+        </ul>
+        <div class="mermaid">
+flowchart TB
+  N["Workflow nodes"] --> S["Port store (in-run state)"]
+  S --> D["context.db (SQLite)"]
+  D --> R["Graph RAG"]
+  D --> C["ComoRAG consolidation"]
+  R --> L["LLM nodes"]
+  C --> L
+        </div>
+      </section>
+
+      <section class="content-section" id="specialized">
+        <h2>Specialized nodes</h2>
+        <h3>Form Filler</h3>
+        <p>Document-grounded multi-field completion: field discovery on live pages, knowledge-file lookups, per-field validation, repair loops, and a review gate. Choice controls are resolved by the Laya semantic picker, which refuses unclear picks so the field is asked instead of guessed.</p>
+        <h3>Handle</h3>
+        <p>Combines VLM scene understanding with LLM reasoning to issue grounded click/scroll/zoom/key actions on screen content that lacks selectors.</p>
+        <h3>MCP</h3>
+        <p>Connects Model Context Protocol servers as workflow nodes; discovered tools are exposed to the router model as individually selectable actions.</p>
+        <h3>Code</h3>
+        <p>Inline or file-based Python with JSON arguments and output variables. The Code Node Studio embeds an Aider-style iterative local-agent loop — an integrated coding agent that writes, edits, and debugs Python inside the graph.</p>
+      </section>
+
+      <section class="content-section" id="operations">
+        <h2>Scheduling, sandbox &amp; remote access</h2>
+        <h3>Scheduler</h3>
+        <p>Runs any chain on a schedule — once, daily, weekly, interval — with enable/disable, next-run display, and run-now. Schedules persist to <code>schedules.json</code> and execute in-process.</p>
+        <h3>RDP sandbox</h3>
+        <p>Automation runs inside an isolated Windows session via a local HTTP agent, so the desktop you are using stays untouched. Chains can opt in per sequence/chain-import.</p>
+        <h3>Remote access</h3>
+        <p>The agent chat is served over LAN or Tailnet with a scannable QR code — a phone can drive runs, answer ask-user questions, and stop executions.</p>
+      </section>
+
+      <section class="content-section" id="export">
+        <h2>Export &amp; build</h2>
+        <h3>Standalone agent export</h3>
+        <p>Collects every chain referenced transitively (including orchestrator brains), bundles chains/sequences/models, and builds a one-folder executable. Exported agents run directly on the local engines (<code>ARROW_DIRECT_ENGINE=1</code>) — no FastAPI dependency, fully offline.</p>
+        <h3>Application build (MSI)</h3>
+        <p>The build pipeline stages dependencies (llama.cpp binaries, Chrome, model files), runs PyInstaller, generates a WiX source, and produces a per-user MSI installer.</p>
+      </section>
+
+      <section class="content-section" id="configuration">
+        <h2>Configuration &amp; data</h2>
+        <h3>Environment variables</h3>
         <table>
-          <thead>
-            <tr>
-              <th>Issue</th>
-              <th>Solution</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Variable</th><th>Purpose</th></tr></thead>
           <tbody>
-            <tr>
-              <td>Sequence plays wrong app</td>
-              <td>Enable "Use App Opened" or manually focus target app</td>
-            </tr>
-            <tr>
-              <td>Click misses target</td>
-              <td>Adjust confidence threshold lower (0.7-0.8)</td>
-            </tr>
-            <tr>
-              <td>OCR not finding text</td>
-              <td>Increase confidence threshold, check language setting</td>
-            </tr>
-            <tr>
-              <td>Scheduler not running</td>
-              <td>Check if Looper is running, verify schedules.json exists</td>
-            </tr>
-            <tr>
-              <td>Sandbox fails</td>
-                            <td>Ensure RDPWrap is installed at <code>C:\Users\%USERNAME%\AppData\Local\LoOper\RDPWrap</code> or reinstall LoOper</td>
-            </tr>
-            <tr>
-              <td>Conditional loop not ending</td>
-              <td>Check max_iterations limit and loop condition</td>
-            </tr>
+            <tr><td><code>API_PORT</code>, <code>AUTO_START_API</code></td><td>Local API control (default 8000 / true).</td></tr>
+            <tr><td><code>OLLAMA_HOST</code>, <code>OLLAMA_PORT</code></td><td>Ollama endpoint.</td></tr>
+            <tr><td><code>LOOPER_LAYA</code></td><td><code>off</code> forces all Laya consumers onto LLM paths.</td></tr>
+            <tr><td><code>LOOPER_ORCH_STATE</code></td><td><code>off</code> disables the orchestrator's per-step state digest.</td></tr>
+            <tr><td><code>LOOPER_LEARN</code></td><td><code>off</code> disables freezing runs into learned chains.</td></tr>
+            <tr><td><code>ARROW_DIRECT_ENGINE</code></td><td><code>1</code> in exported agents: direct engines, no API calls.</td></tr>
           </tbody>
         </table>
-
-        <h3>Keyboard Shortcuts</h3>
+        <h3>Data locations</h3>
         <table>
-          <thead>
-            <tr>
-              <th>Shortcut</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Data</th><th>Location</th></tr></thead>
           <tbody>
-            <tr>
-              <td><strong>Ctrl+C</strong></td>
-              <td>Copy selected nodes</td>
-            </tr>
-            <tr>
-              <td><strong>Ctrl+V</strong></td>
-              <td>Paste copied nodes</td>
-            </tr>
-            <tr>
-              <td><strong>ESC</strong></td>
-              <td>Stop recording / Cancel execution</td>
-            </tr>
+            <tr><td>Chains</td><td><code>chains/*.json</code> (learned: <code>chains/learned/*.json</code>)</td></tr>
+            <tr><td>Sequences</td><td><code>sequences/*.json</code>, <code>web_sequences/*.json</code></td></tr>
+            <tr><td>Context memory</td><td><code>data/context.db</code> (SQLite)</td></tr>
+            <tr><td>Schedules</td><td><code>schedules.json</code></td></tr>
+            <tr><td>Goal ledger</td><td><code>data/agent_goals.json</code></td></tr>
+            <tr><td>Models / voices</td><td><code>data/piper_voices/</code>, <code>data/vosk_models/</code></td></tr>
           </tbody>
         </table>
+      </section>
 
-        <p style="margin-top: 32px; font-size: 0.9rem; color: #b9a6d6;"><em>Documentation version 1.5.0 - Last updated for Looper Release 1.5.0</em></p>
+      <section class="content-section" id="principles">
+        <h2>Engineering principles</h2>
+        <ul>
+          <li><strong>Neuro-symbolic execution</strong> — the graph is a deterministic program; AI has a fallback or fail-closed default everywhere.</li>
+          <li><strong>Small-model discipline</strong> — stepped protocols and single-token contracts for 1–4B models.</li>
+          <li><strong>Named-port contracts</strong> — values move only along explicit edges.</li>
+          <li><strong>Runtime-derived descriptions</strong> — tool descriptions are generated at call time, never persisted stale.</li>
+          <li><strong>Fail-closed defaults</strong> — new capabilities ship default-off; unparseable answers route to defaults.</li>
+          <li><strong>Entity-first grounding</strong> — selectors and UIA elements over absolute coordinates.</li>
+          <li><strong>No timeouts on local inference</strong> — interruption is a stop-flag concern.</li>
+          <li><strong>Serialized, on-demand model lifecycle</strong> — no preload at startup; burst-aware cleanup.</li>
+          <li><strong>Approvals and memory are primitives</strong> — composed by users, not hardcoded policy.</li>
+          <li><strong>Offline and telemetry-free</strong> — nothing leaves the machine.</li>
+          <li><strong>Inspectable and reversible</strong> — logs, trace ports, blocked states; ESC always aborts.</li>
+        </ul>
+      </section>
+
+      <section class="content-section" id="licensing">
+        <h2>Licensing</h2>
+        <p>Arrow is open source. Use it, modify it, and share it freely — every feature and node type, no execution limits.</p>
+        <ul>
+          <li>All features included: visual workflows, agent mode, the orchestrator, vision, OCR, speech, and local AI.</li>
+          <li>Runs fully offline — no activation servers, no telemetry.</li>
+          <li>Export agents as standalone executables straight from the source.</li>
+          <li>The packaged MSI installer (WiX) is the recommended path for end users; the source is the recommended path for contributors.</li>
+        </ul>
       </section>
     </main>
   </div>
 
-  <footer>© 2026 LoOper</footer>
+  <footer>
+    <a href="https://cafecito.app/rodrigo343" rel="noopener" target="_blank" style="display:block; margin-bottom: 14px;"><img srcset="https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x" src="https://cdn.cafecito.app/imgs/buttons/button_5.png" alt="Invitame un café en cafecito.app" /></a>
+    © 2026 Arrow — open source
+  </footer>
 
   <script src="assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const navLinks = document.querySelectorAll('.docs-sidebar a[href^="#"]');
+      const sections = document.querySelectorAll('.content-section[id]');
+      let isClickScrolling = false;
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.getElementById(this.getAttribute('href').substring(1));
+          if (target) {
+            isClickScrolling = true;
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => { isClickScrolling = false; }, 1000);
+          }
+        });
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        if (isClickScrolling) return;
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            navLinks.forEach(link => {
+              link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+            });
+          }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+      sections.forEach(s => observer.observe(s));
+      if (navLinks.length) navLinks[0].classList.add('active');
+    });
+  </script>
 </body>
 </html>

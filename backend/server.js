@@ -20,6 +20,10 @@ let submissions = [];
 let contactSubmissions = [];
 let purchaseRequests = [];
 
+// Activation key and download URL for purchase confirmations
+const ACTIVATION_KEY = 'ARW-MV4UU-MLDGJ-LHSSL-KN5UV-C22WK-VIVGS-LTJFW-WY6TD-GNLGY-SLKN5-UU22S-BPFHG-SMDXJ-ZJTA6-CNPFE-XGSLN-NAZVQ-MTYOB-RFO3B-QJFVG-66DGK-E6T27-BSMJL-GCWKI-NJCHA-6THPB-QUUMS-ZJRHW-IYJVO-FUHSQ-SOLFW-GGYZL-OZ2TC-32TGB-3EESB-LM5CT-2';
+const DOWNLOAD_URL = 'https://drive.google.com/file/d/1ocZK1GrF-eI10XuouNQwQKyQBkm-DcZs/view?usp=sharing';
+
 // Create email transporter
 // Using Gmail SMTP - you'll need to set up an App Password
 const transporter = nodemailer.createTransport({
@@ -108,11 +112,11 @@ app.post('/api/beta-register', async (req, res) => {
     const userMailOptions = {
       from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
       to: email,
-      subject: 'Welcome to the LoOper Beta Program!',
+      subject: 'Welcome to the Arrow Beta Program!',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #6d5bd0;">Welcome to LoOper Beta, ${fullname}!</h2>
-          <p>Thank you for applying to the LoOper Beta Program. We've received your application and are reviewing it.</p>
+          <h2 style="color: #0891b2;">Welcome to Arrow Beta, ${fullname}!</h2>
+          <p>Thank you for applying to the Arrow Beta Program. We've received your application and are reviewing it.</p>
           <p>Here's what happens next:</p>
           <ul>
             <li>We'll review your application within 2-3 business days</li>
@@ -122,7 +126,7 @@ app.post('/api/beta-register', async (req, res) => {
           <p>If you have any questions, reply to this email.</p>
           <p style="margin-top: 30px; color: #666;">
             Best regards,<br>
-            The LoOper Team
+            The Arrow Team
           </p>
         </div>
       `
@@ -188,7 +192,7 @@ app.post('/api/contact', async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
       to: 'vozicomsystems@gmail.com',
-      subject: `[LoOper Contact] ${inquiryLabels[inquiryType]}: ${subject}`,
+      subject: `[Arrow Contact] ${inquiryLabels[inquiryType]}: ${subject}`,
       html: `
         <h2>New Contact Form Submission</h2>
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
@@ -241,16 +245,16 @@ app.post('/api/contact', async (req, res) => {
     const userMailOptions = {
       from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
       to: email,
-      subject: 'We received your message - LoOper',
+      subject: 'We received your message - Arrow',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #6d5bd0;">Thank you for contacting us, ${name}!</h2>
+          <h2 style="color: #0891b2;">Thank you for contacting us, ${name}!</h2>
           <p>We've received your ${inquiryLabels[inquiryType].toLowerCase()} and will get back to you as soon as possible.</p>
           <p><strong>Subject:</strong> ${subject}</p>
           <p style="margin-top: 20px;">Our team typically responds within 24-48 hours during business days.</p>
           <p style="margin-top: 30px; color: #666;">
             Best regards,<br>
-            The LoOper Team
+            The Arrow Team
           </p>
         </div>
       `
@@ -317,7 +321,7 @@ app.post('/api/purchase', async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
       to: 'vozicomsystems@gmail.com',
-      subject: `[LoOper Purchase] New ${planLabels[plan]} Request from ${name}`,
+      subject: `[Arrow Purchase] New ${planLabels[plan]} Request from ${name}`,
       html: `
         <h2>New Purchase Request</h2>
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
@@ -349,7 +353,7 @@ app.post('/api/purchase', async (req, res) => {
           </tr>
           <tr style="background-color: #f5f5f5;">
             <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Total Price</td>
-            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #6d5bd0;">$${totalPrice}</td>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #0891b2;">$${totalPrice}</td>
           </tr>
           ${message ? `
           <tr>
@@ -373,35 +377,60 @@ app.post('/api/purchase', async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    // Send confirmation email to user
+    // Send confirmation email to user with download link and activation key
     const userMailOptions = {
       from: process.env.EMAIL_USER || 'vozicomsystems@gmail.com',
       to: email,
-      subject: 'Your LoOper Purchase Request - Next Steps',
+      subject: 'Your Arrow Purchase - Download & Activation Key',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #6d5bd0;">Thank you for your interest, ${name}!</h2>
-          <p>We've received your purchase request for <strong>${planLabels[plan]}</strong>.</p>
+          <h2 style="color: #0891b2;">Thank you for your purchase, ${name}!</h2>
+          <p>Your order for <strong>${planLabels[plan]}</strong> has been confirmed.</p>
           
           <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #333;">Request Summary:</h3>
+            <h3 style="margin-top: 0; color: #333;">Order Summary:</h3>
             <p><strong>Plan:</strong> ${planLabels[plan]}</p>
             ${plan === 'corporate' || plan === 'subscription' ? `<p><strong>Devices:</strong> ${devices}</p>` : ''}
             <p><strong>Total:</strong> $${totalPrice}</p>
           </div>
 
-          <h3 style="color: #333;">What happens next?</h3>
-          <ol style="line-height: 1.8;">
-            <li>Our team will review your request within a few minutes</li>
-            <li>You'll receive a verification email with payment instructions</li>
-            <li>Once payment is confirmed, you'll get your download link and license key</li>
-          </ol>
+          <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #4CAF50;">
+            <h3 style="margin-top: 0; color: #2e7d32;">Download Arrow</h3>
+            <p>Download your copy of Arrow here:</p>
+            <p style="text-align: center; margin: 16px 0;">
+              <a href="${DOWNLOAD_URL}" style="display: inline-block; background: #0891b2; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">
+                Download Arrow
+              </a>
+            </p>
+            <p style="font-size: 0.85rem; color: #666;">
+              Or copy this link: <a href="${DOWNLOAD_URL}" style="color: #0891b2;">${DOWNLOAD_URL}</a>
+            </p>
+          </div>
 
-          <p style="margin-top: 20px;">If you have any questions, simply reply to this email.</p>
-          
+          <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #FF9800;">
+            <h3 style="margin-top: 0; color: #e65100;">Your Activation Key</h3>
+            <p>Use the following key to activate your license:</p>
+            <div style="background: white; padding: 16px; border-radius: 6px; border: 1px dashed #FF9800; font-family: 'Courier New', monospace; font-size: 13px; word-break: break-all; line-height: 1.6; color: #333; margin: 12px 0; user-select: all;">
+              ${ACTIVATION_KEY}
+            </div>
+            <p style="font-size: 0.85rem; color: #666;">Copy this key and paste it into the activation dialog when prompted.</p>
+          </div>
+
+          <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #333;">Installation Instructions:</h4>
+            <ol style="line-height: 1.8; padding-left: 20px;">
+              <li>Download Arrow using the button above</li>
+              <li>Run the installer and follow the setup wizard</li>
+              <li>Launch Arrow and enter your activation key when prompted</li>
+              <li>Start automating with deterministic, edge-ready AI!</li>
+            </ol>
+          </div>
+
+          <p>If you have any questions or issues with activation, simply reply to this email and our support team will help you.</p>
+
           <p style="margin-top: 30px; color: #666;">
             Best regards,<br>
-            The LoOper Team
+            The Arrow Team
           </p>
         </div>
       `
@@ -443,10 +472,10 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`
 ╔════════════════════════════════════════════════════════╗
-║           LoOper Beta Backend Server                   ║
+║           Arrow Backend Server                   ║
 ╠════════════════════════════════════════════════════════╣
 ║  Server running on: http://localhost:${PORT}              ║
-║  Beta form: http://localhost:${PORT}/beta.html            ║
+║  Contact form: http://localhost:${PORT}/contact.html            ║
 ║  Total submissions: ${submissions.length}                                  ║
 ╚════════════════════════════════════════════════════════╝
   `);

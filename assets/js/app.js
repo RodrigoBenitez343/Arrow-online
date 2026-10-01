@@ -1,22 +1,15 @@
-const parallaxBackground = document.querySelector('.parallax-bg');
-
-if (parallaxBackground) {
-  const updateParallax = () => {
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const imageAspectRatio = 2048 / 1024;
-    const renderedHeight = viewportWidth * imageAspectRatio;
-    const extraHeight = Math.max(0, renderedHeight - viewportHeight);
-    const baseOffset = -extraHeight;
-    const maxScrollable = Math.max(1, document.documentElement.scrollHeight - viewportHeight);
-    const scrollProgress = Math.min(window.scrollY / maxScrollable, 1);
-    const scrollOffset = extraHeight * scrollProgress;
-
-    parallaxBackground.style.setProperty('--parallax-base', `${baseOffset}px`);
-    parallaxBackground.style.setProperty('--parallax-offset', `${scrollOffset}px`);
-  };
-
-  updateParallax();
-  window.addEventListener('scroll', updateParallax, { passive: true });
-  window.addEventListener('resize', updateParallax);
+// Scroll-reveal: fade elements in as they enter the viewport (native IntersectionObserver)
+const revealEls = document.querySelectorAll('.reveal');
+if (revealEls.length) {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced || !('IntersectionObserver' in window)) {
+    revealEls.forEach(el => el.classList.add('visible'));
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('visible'); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => io.observe(el));
+  }
 }

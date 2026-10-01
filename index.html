@@ -3,228 +3,260 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LoOper - AI-Powered Desktop Automation</title>
-  <meta name="description" content="LoOper is a desktop-native automation platform that combines deterministic action chains with local AI. Build intelligent agents that see, reason, and act." />
+  <title>Arrow — Local AI Automation</title>
+  <meta name="description" content="Arrow records interactions once, composes them into visual workflow graphs, and runs them deterministically with local AI, vision, OCR, and speech. No cloud, no telemetry, no per-token fees." />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <style>
-    .feature-section {
-      margin: 40px 0;
-    }
-    .feature-section h2 {
-      color: #f2eaff;
-      font-size: 1.8rem;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
+    .feature-section { margin: 40px 0; }
+    .feature-section h2 { color: #ffffff; font-size: 1.8rem; margin-bottom: 8px; text-align: center; }
+    .section-sub { color: #7d8187; text-align: center; max-width: 680px; margin: 0 auto 28px; line-height: 1.5; }
+
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .feature-card {
-      background: rgba(20, 22, 40, 0.9);
-      border: 1px solid rgba(109,91,208,.4);
-      border-radius: 12px;
-      padding: 24px;
-      text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: rgba(26,26,26,.9); border: 1px solid rgba(31,34,40,.3); border-radius: 12px;
+      padding: 24px; border-top: 3px solid rgba(31,34,40,.7);
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
-    .feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(109, 91, 208, 0.3);
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(31,34,40,.2); border-color: rgba(31,34,40,.7); }
+    .feature-card h3 { color: #d5d9e2; font-size: 1.05rem; margin: 0 0 10px; }
+    .feature-card p { color: #7d8187; font-size: .9rem; line-height: 1.5; margin: 0; }
+    .feature-card .icon, .pillar .icon { margin: 0 auto 14px; }
+
+    .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0 0; }
+    .pillar { background: rgba(26,26,26,.9); border: 1px solid rgba(31,34,40,.3); border-radius: 12px; padding: 20px; text-align: center; }
+    .pillar h4 { color: #d5d9e2; margin: 0 0 8px; font-size: 1rem; }
+    .pillar p { color: #7d8187; margin: 0; font-size: .9rem; line-height: 1.5; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .step { background: rgba(26,26,26,.9); border: 1px solid rgba(31,34,40,.3); border-radius: 12px; padding: 24px; text-align: center; }
+    .step .num {
+      width: 40px; height: 40px; margin: 0 auto 12px; border-radius: 50%;
+      background: #ffffff;
+      display: flex; align-items: center; justify-content: center; font-weight: 600; color: #0a0a0a;
     }
-    .feature-icon {
-      font-size: 2.5rem;
-      margin-bottom: 16px;
-    }
-    .feature-card h3 {
-      color: #d8ccff;
-      font-size: 1.1rem;
-      margin: 0 0 12px;
-    }
-    .feature-card p {
-      color: #b9a6d6;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      margin: 0;
-    }
-    .audience-section {
-      background: rgba(20, 22, 40, 0.9);
-      border-radius: 12px;
-      padding: 32px;
-      margin: 40px 0;
-      border: 1px solid rgba(109,91,208,.4);
-    }
-    .audience-section h2 {
-      color: #f2eaff;
-      font-size: 1.6rem;
-      margin: 0 0 24px;
-      text-align: center;
-    }
-    .audience-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-    .audience-card {
-      padding: 20px;
-      border-left: 3px solid var(--accent);
-    }
-    .audience-card h4 {
-      color: #d8ccff;
-      margin: 0 0 8px;
-      font-size: 1rem;
-    }
-    .audience-card p {
-      color: #b9a6d6;
-      margin: 0;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
+    .step h3 { color: #d5d9e2; margin: 0 0 10px; font-size: 1.1rem; }
+    .step p { color: #7d8187; margin: 0; font-size: .9rem; line-height: 1.5; }
+    .step-media { position: relative; margin-top: 16px; border-radius: 10px; overflow: hidden; border: 1px dashed rgba(31,34,40,.5); background: rgba(10,10,10,.4); aspect-ratio: 16 / 9; }
+    .step-media-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #7d8187; font-size: .8rem; }
+    .step-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s ease; }
+
+    .audience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .audience-card { background: rgba(26,26,26,.9); border: 1px solid rgba(31,34,40,.3); border-radius: 12px; padding: 20px; border-left: 3px solid var(--accent); }
+    .audience-card h4 { color: #d5d9e2; margin: 0 0 8px; font-size: 1rem; }
+    .audience-card p { color: #7d8187; margin: 0; font-size: .9rem; line-height: 1.5; }
+
     .cta-section {
-      text-align: center;
-      padding: 48px 32px;
-      background: linear-gradient(135deg, rgba(109, 91, 208, 0.2), rgba(158, 106, 255, 0.1));
-      border-radius: 12px;
-      margin: 40px 0;
-      border: 1px solid rgba(109,91,208,.4);
+      text-align: center; padding: 48px 32px;
+      background: linear-gradient(135deg, rgba(31,34,40,.18), rgba(31,34,40,.1));
+      border-radius: 12px; margin: 40px 0; border: 1px solid rgba(31,34,40,.4);
     }
-    .cta-section h2 {
-      color: #f2eaff;
-      font-size: 1.8rem;
-      margin: 0 0 16px;
-    }
-    .cta-section p {
-      color: #b9a6d6;
-      font-size: 1.1rem;
-      margin: 0 0 24px;
-    }
+    .cta-section h2 { color: #ffffff; font-size: 1.8rem; margin: 0 0 16px; }
+    .cta-section p { color: #7d8187; font-size: 1.1rem; margin: 0 0 24px; }
+
     @media (max-width: 900px) {
-      .feature-grid { grid-template-columns: repeat(2, 1fr); }
-      .audience-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 520px) {
-      .feature-grid { grid-template-columns: 1fr; }
+      .feature-grid, .pillars, .steps, .audience-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="parallax-bg"></div>
   <header class="site-header">
-    <div class="brand" aria-label="LoOper brand">
-      <span class="logo">LoOper</span>
-      <span class="tag">Driven by and for human goals.</span>
+    <div class="brand" aria-label="Arrow brand">
+      <span class="logo">Arrow</span>
+      <span class="tag">Local AI automation, on your machine.</span>
     </div>
     <nav class="site-nav" aria-label="Main navigation">
       <a href="index.html" class="active">Home</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
       <a href="docs.html">Docs</a>
-      <a href="pricing.html">Pricing</a>
     </nav>
   </header>
 
   <main class="container">
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section class="hero" id="hero">
-      <h1>Build AI Agents That See, Reason & Act</h1>
-      <p>LoOper is a desktop-native automation platform that combines <strong>deterministic action chains</strong> with <strong>local AI reasoning</strong>. Create intelligent agents that visually understand your screen, make decisions with LLMs, and execute reliable workflows—all while keeping your data private.</p>
+      <h1>Build AI agents that see, reason, and act — entirely on your machine.</h1>
+      <p>Arrow records any interaction once, composes it into a <strong>visual workflow graph</strong>, and runs it <strong>deterministically</strong> with local AI, local vision, local OCR, and local speech. No cloud. No telemetry. No per-token fees.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="beta.html">Join Beta Program</a>
-        <a class="btn btn-secondary" href="docs.html">Documentation</a>
-        <a class="btn btn-secondary" href="about.html">Learn More</a>
+        <a class="btn btn-primary" href="docs.html">Get Started</a>
+        <a class="btn btn-secondary" href="contact.html">Contact</a>
+        <a class="btn btn-secondary" href="about.html">About Arrow</a>
       </div>
     </section>
 
-    <!-- Core Capabilities -->
+    <!-- Capabilities -->
     <section class="feature-section">
-      <h2>Core Capabilities</h2>
+      <h2>Everything runs locally</h2>
+      <p class="section-sub">One platform for recording, composing, and running automation — with the AI, vision, OCR, and speech all on-device.</p>
       <div class="feature-grid">
-        <div class="feature-card">
-          <div class="feature-icon">📹</div>
-          <h3>Visual Recording</h3>
-          <p>Record mouse, keyboard, and screen interactions with automatic screenshot capture for reliable playback.</p>
+        <div class="feature-card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5"/><rect x="9" y="15" width="6" height="6" rx="1.5"/><path d="M9 6h6M6 9v6M18 9v6"/></svg></div>
+          <h3>Visual workflow editor</h3>
+          <p>Compose typed nodes into a graph — not scripts. Branch, loop, and nest chains.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🧠</div>
-          <h3>Local AI Integration</h3>
-          <p>Connect to Ollama for on-device LLM reasoning. No cloud required—your data stays private.</p>
+        <div class="feature-card reveal reveal-d1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 8-6 1-3 6z"/></svg></div>
+          <h3>Desktop recorder</h3>
+          <p>Capture clicks, typing, scrolls, drags, clipboard, screenshots, and UI elements.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎨</div>
-          <h3>Visual Workflow Editor</h3>
-          <p>Build complex automation chains with our node-based graph editor. No coding required.</p>
+        <div class="feature-card reveal reveal-d2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></svg></div>
+          <h3>Web recorder</h3>
+          <p>DOM-level browser capture via CDP. Selector-based sessions, never raw coordinates.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔒</div>
-          <h3>Secure Sandboxing</h3>
-          <p>Run automations in isolated RDP sessions. Safe execution without interfering with your work.</p>
+        <div class="feature-card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></div>
+          <h3>Local AI</h3>
+          <p>llama.cpp and Ollama on-device reasoning. Your data never leaves the machine.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">👁️</div>
-          <h3>Computer Vision</h3>
-          <p>Template matching and OCR for reliable UI element detection and text recognition.</p>
+        <div class="feature-card reveal reveal-d1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <h3>Vision &amp; OCR</h3>
+          <p>Multi-scale template matching, ONNX detection, and PaddleOCR to find and read any UI.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">⏰</div>
-          <h3>Scheduled Execution</h3>
-          <p>Set up recurring or one-time schedules. Automations run even when you're away.</p>
+        <div class="feature-card reveal reveal-d2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></div>
+          <h3>Speech</h3>
+          <p>Piper neural TTS and Vosk offline STT for a hands-free voice mode.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔗</div>
-          <h3>Conditional Logic</h3>
-          <p>Create branching workflows with presence triggers, OCR conditions, and code evaluation.</p>
+        <div class="feature-card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><circle cx="9" cy="14" r="1.4"/><circle cx="15" cy="14" r="1.4"/><path d="M12 8V5.5a1.5 1.5 0 1 0-1.5-1.5"/></svg></div>
+          <h3>Agent mode</h3>
+          <p>The "system chain" is the agent's mind — chat overlay, phone client, chains as tools.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
-          <h3>Neuro-Symbolic AI</h3>
-          <p>LLMs make high-level decisions while deterministic chains handle execution—90% fewer API calls.</p>
+        <div class="feature-card reveal reveal-d1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.5 6h9M5 8.5V15a2 2 0 0 0 2 2h5M19 8.5V15a2 2 0 0 1-2 2h-5"/></svg></div>
+          <h3>Orchestrator</h3>
+          <p>A goal loop over mini-brain chains that keeps working until the job is done.</p>
+        </div>
+        <div class="feature-card reveal reveal-d2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
+          <h3>Memory &amp; context</h3>
+          <p>Persistent SQLite memory, retrieval, and consolidation across chains.</p>
+        </div>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h4>Deterministic + AI</h4>
+          <p>The graph is a symbolic program; models add judgment only at the seams.</p>
+        </div>
+        <div class="pillar reveal reveal-d1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <h4>Scheduling &amp; sandbox</h4>
+          <p>Run on a schedule, or in an isolated RDP session off your active desktop.</p>
+        </div>
+        <div class="pillar reveal reveal-d2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></div>
+          <h4>Standalone export</h4>
+          <p>Compile a system chain plus its assets into a single distributable .exe.</p>
         </div>
       </div>
     </section>
 
-    <!-- Target Audience -->
-    <section class="audience-section">
-      <h2>Who is LoOper For?</h2>
+    <!-- How it works -->
+    <section class="feature-section">
+      <h2>How it works</h2>
+      <p class="section-sub">Three steps from idea to running agent.</p>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="num">1</div>
+          <h3>Record</h3>
+          <p>Capture a desktop sequence or browser flow once. Arrow grabs screenshots and UI elements along the way.</p>
+          <div class="step-media">
+            <span class="step-media-label">GIF — record.gif</span>
+            <img src="assets/images/record.gif" alt="Recording a desktop sequence in Arrow" onload="this.style.opacity='1'" onerror="this.style.display='none'" />
+          </div>
+        </div>
+        <div class="step reveal reveal-d1">
+          <div class="num">2</div>
+          <h3>Compose</h3>
+          <p>Connect nodes into a visual chain. Branch, loop, and nest. Add LLM, vision, OCR, and code nodes where they help.</p>
+          <div class="step-media">
+            <span class="step-media-label">GIF — compose.gif</span>
+            <img src="assets/images/compose.gif" alt="Composing nodes into a visual chain in Arrow" onload="this.style.opacity='1'" onerror="this.style.display='none'" />
+          </div>
+        </div>
+        <div class="step reveal reveal-d2">
+          <div class="num">3</div>
+          <h3>Run</h3>
+          <p>Execute deterministically with element-first grounding. Approvals and memory are just nodes you wire in.</p>
+          <div class="step-media">
+            <span class="step-media-label">GIF — 3.gif</span>
+            <img src="assets/images/3.gif" alt="Running an Arrow chain deterministically" onload="this.style.opacity='1'" onerror="this.style.display='none'" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Arrow difference -->
+    <section class="feature-section">
+      <h2>Frontier-model capability, without the frontier model</h2>
+      <p class="section-sub">Arrow gets more out of small local models through orchestration, grounding, and self-improvement — not raw compute.</p>
+      <div class="feature-grid">
+        <div class="feature-card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <h3>Integrated coding agent</h3>
+          <p>An Aider-style local-agent loop in the Code Node Studio writes, edits, and debugs Python inside your graph.</p>
+        </div>
+        <div class="feature-card reveal reveal-d1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5"/><rect x="9" y="15" width="6" height="6" rx="1.5"/><path d="M9 6h6M6 9v6M18 9v6"/></svg></div>
+          <h3>Apps composed from nodes</h3>
+          <p>Sequence, web, LLM, vision, code, memory, and MCP nodes wired by ports — an app, not a script.</p>
+        </div>
+        <div class="feature-card reveal reveal-d2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><path d="M3 3l18 18"/></svg></div>
+          <h3>Anti-detection by design</h3>
+          <p>Jittered clicks, curved mouse paths, variable timing, native CDP input, and a durable browser profile.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5-8 4.5-8-4.5z"/><path d="M4 11l8 4.5 8-4.5"/><path d="M4 15.5l8 4.5 8-4.5"/></svg></div>
+          <h3>Small models, big results</h3>
+          <p>Stepped protocols, single-token contracts, and a typed decision engine let a 3B local model do frontier work.</p>
+        </div>
+        <div class="feature-card reveal reveal-d1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
+          <h3>Learns from verified runs</h3>
+          <p>Verified goals freeze into learned chains and memory consolidates — the library improves itself.</p>
+        </div>
+        <div class="feature-card reveal reveal-d2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg></div>
+          <h3>Element-first grounding</h3>
+          <p>Resolve the live UI element before acting — survives moved windows, DPI, and theme changes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Audience -->
+    <section class="feature-section">
+      <h2>Who it's for</h2>
+      <p class="section-sub">From solo power users to enterprise automation teams.</p>
       <div class="audience-grid">
-        <div class="audience-card">
-          <h4>🏢 Business Process Automation</h4>
-          <p>Finance, HR, and operations teams building auditable, compliant automation for repetitive tasks.</p>
-        </div>
-        <div class="audience-card">
-          <h4>🧪 QA & Testing Engineers</h4>
-          <p>Create intelligent test agents that adapt to UI changes while maintaining deterministic execution.</p>
-        </div>
-        <div class="audience-card">
-          <h4>⚙️ IT Operations</h4>
-          <p>Monitor systems and execute maintenance workflows with AI-driven decision making.</p>
-        </div>
-        <div class="audience-card">
-          <h4>🤖 AI Enthusiasts</h4>
-          <p>Experiment with neuro-symbolic agents combining local LLMs with reliable automation.</p>
-        </div>
-        <div class="audience-card">
-          <h4>👨‍💻 Power Users</h4>
-          <p>Automate personal workflows with intelligent agents that learn and adapt to your habits.</p>
-        </div>
-        <div class="audience-card">
-          <h4>🏗️ RPA Developers</h4>
-          <p>Build advanced automations with visual validation, AI reasoning, and secure sandboxing.</p>
-        </div>
+        <div class="audience-card reveal"><h4>Business process automation</h4><p>Finance, HR, and ops teams building auditable, on-premise automation.</p></div>
+        <div class="audience-card reveal reveal-d1"><h4>QA &amp; testing engineers</h4><p>Test agents that adapt to UI changes while staying deterministic.</p></div>
+        <div class="audience-card reveal reveal-d2"><h4>IT operations</h4><p>Maintenance and monitoring workflows with AI-driven decisions, locally.</p></div>
+        <div class="audience-card reveal"><h4>AI enthusiasts</h4><p>Neuro-symbolic agents powered by local models — no cloud, no fees.</p></div>
+        <div class="audience-card reveal reveal-d1"><h4>Power users</h4><p>Automate personal workflows with agents that keep your data on-device.</p></div>
+        <div class="audience-card reveal reveal-d2"><h4>RPA developers</h4><p>Visual validation, AI reasoning, and secure sandboxing in one tool.</p></div>
       </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-      <h2>Ready to Automate Smarter?</h2>
-      <p>Join our beta program and be among the first to experience the future of AI-powered desktop automation.</p>
+    <!-- CTA -->
+    <section class="cta-section reveal">
+      <h2>Automation that stays on your machine.</h2>
+      <p>Build your first Arrow agent — no cloud, no telemetry, no per-token fees.</p>
       <div class="cta-row" style="justify-content: center;">
-        <a class="btn btn-primary" href="beta.html">Apply for Beta Access</a>
+        <a class="btn btn-primary" href="docs.html">Get Started</a>
       </div>
     </section>
   </main>
 
-  <footer>© 2026 LoOper</footer>
+  <footer>
+    <a href="https://cafecito.app/rodrigo343" rel="noopener" target="_blank" style="display:block; margin-bottom: 14px;"><img srcset="https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x" src="https://cdn.cafecito.app/imgs/buttons/button_5.png" alt="Invitame un café en cafecito.app" /></a>
+    © 2026 Arrow — open source
+  </footer>
 
   <script src="assets/js/app.js"></script>
 </body>
