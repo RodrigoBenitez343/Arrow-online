@@ -73,7 +73,6 @@ footer { text-align: center; padding: 24px; color: var(--muted); border-top: 1px
 @media (prefers-reduced-motion: reduce) {
   .reveal, .hero { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
   .icon { transition: none !important; }
-  .hero::before { animation: none !important; }
 }
 
 /* Vector icons */
@@ -81,15 +80,74 @@ footer { text-align: center; padding: 24px; color: var(--muted); border-top: 1px
 .icon svg { width: 22px; height: 22px; }
 .icon:hover { transform: scale(1.08); background: rgba(34,211,238,.18); }
 
-/* Hero: subtle animated accent glow */
+/* Hero: node-editor background flowing left → right (canvas), dimmed behind text */
 .hero { position: relative; overflow: hidden; }
 .hero::before {
-  content: ''; position: absolute; inset: -60%; z-index: 0; pointer-events: none;
-  background: radial-gradient(circle at 30% 20%, rgba(34,211,238,.12), transparent 55%);
-  animation: heroGlow 11s ease-in-out infinite alternate;
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, rgba(6,9,12,.58), rgba(6,9,12,.18) 58%, transparent 82%);
 }
-.hero > * { position: relative; z-index: 1; }
-@keyframes heroGlow { from { transform: translateX(-6%); opacity: .55; } to { transform: translateX(6%); opacity: 1; } }
+.hero-canvas { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; opacity: .9; }
+.hero > :not(.hero-canvas) { position: relative; z-index: 2; }
+
+/* ===== Agent-mode animation (index: "Frontier-model capability") ===== */
+.agent-card { position: relative; overflow: hidden; background: var(--card); border: 1px solid var(--border); border-radius: 24px; }
+.agent-canvas { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; }
+.agent-stage { position: relative; z-index: 2; height: 500px; }
+
+.agent-window { position: absolute; inset: 0; display: flex; flex-direction: column; background: #0d0d0f; overflow: hidden; opacity: 0; transition: opacity .6s ease; }
+.agent-window.show { opacity: 1; }
+.agent-titlebar { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 14px; background: #111114; border-bottom: 1px solid var(--border); }
+.agent-dots { display: flex; gap: 6px; }
+.agent-dots i { width: 9px; height: 9px; border-radius: 50%; background: #2a2d33; }
+.agent-title { color: var(--secondary-text); font-size: .8rem; margin-left: 4px; }
+.agent-winbtns { margin-left: auto; display: flex; gap: 12px; color: var(--muted); font-size: .72rem; line-height: 1; }
+
+.agent-body { flex: 1; display: flex; min-height: 0; }
+.agent-sidebar { width: 188px; flex: none; border-right: 1px solid var(--border); padding: 10px; display: flex; flex-direction: column; gap: 6px; background: #0f0f12; }
+.agent-coworker { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 10px; border: 1px solid transparent; transition: background .3s ease, border-color .3s ease; }
+.agent-coworker.active { background: rgba(34,211,238,.09); border-color: rgba(34,211,238,.3); }
+.agent-av { width: 26px; height: 26px; flex: none; border-radius: 50%; background: rgba(34,211,238,.14); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: .6rem; font-weight: 600; letter-spacing: .02em; }
+.agent-cn { color: var(--secondary-text); font-size: .84rem; }
+.agent-role { margin-left: auto; color: var(--muted); font-size: .68rem; }
+
+.agent-chat { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.agent-messages { flex: 1; min-height: 0; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.agent-hint { margin: auto; color: var(--muted); font-size: .84rem; }
+.agent-msg { display: flex; align-items: flex-start; gap: 9px; max-width: 84%; animation: agentMsgIn .35s ease both; }
+.agent-msg-user { align-self: flex-end; flex-direction: row-reverse; }
+.agent-msg .agent-av { margin-top: 17px; }
+@keyframes agentMsgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.agent-col { display: flex; flex-direction: column; min-width: 0; }
+.agent-name { color: var(--muted); font-size: .68rem; margin-bottom: 3px; }
+.agent-bubble { background: #171a1f; border: 1px solid var(--border); border-radius: 12px; padding: 9px 12px; color: var(--secondary-text); font-size: .85rem; line-height: 1.5; }
+.agent-msg-user .agent-bubble { background: rgba(34,211,238,.1); border-color: rgba(34,211,238,.26); color: #e6f9fd; }
+.agent-typing { display: inline-flex; gap: 4px; padding: 2px 0; }
+.agent-typing span { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); animation: agentBlink 1s infinite; }
+.agent-typing span:nth-child(2) { animation-delay: .15s; }
+.agent-typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes agentBlink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+.agent-inputbar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #111114; border-top: 1px solid var(--border); }
+.agent-mic { color: var(--muted); display: flex; }
+.agent-mic svg { width: 16px; height: 16px; }
+.agent-inputtext { flex: 1; min-width: 0; display: flex; align-items: center; min-height: 38px; padding: 8px 12px; background: #0d0d0f; border: 1px solid var(--border); border-radius: 10px; font-size: .85rem; color: var(--secondary-text); }
+.agent-ph { color: var(--muted); }
+.agent-typed { white-space: pre; }
+.agent-caret { width: 1px; height: 15px; margin-left: 1px; background: var(--accent); animation: agentCaret 1s steps(1) infinite; }
+@keyframes agentCaret { 50% { opacity: 0; } }
+.agent-send { flex: none; padding: 7px 16px; border-radius: 999px; background: #fff; color: #0a0a0a; font-size: .8rem; font-weight: 500; transition: transform .15s ease; }
+.agent-send.click { transform: scale(.9); }
+
+.agent-cursor { position: absolute; left: 0; top: 0; z-index: 6; width: 18px; height: 18px; opacity: 0; pointer-events: none; transition: transform .55s cubic-bezier(.4,0,.2,1), opacity .4s ease; }
+.agent-cursor.show { opacity: 1; }
+.agent-cursor-ic { display: block; width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)); transform-origin: 18% 10%; }
+.agent-cursor.click .agent-cursor-ic { animation: agentClick .32s ease; }
+@keyframes agentClick { 0%, 100% { transform: scale(1); } 45% { transform: scale(.78); } }
+
+@media (max-width: 720px) {
+  .agent-sidebar { display: none; }
+  .agent-stage { height: 360px; }
+}
 
 /* Scrollbars — neutral dark */
 * { scrollbar-width: thin; scrollbar-color: #3a3f47 #0a0a0a; }

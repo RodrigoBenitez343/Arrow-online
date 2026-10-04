@@ -21,10 +21,11 @@ with local AI, local vision, local OCR, and local speech.
 
 ## Hero
 
-- **Headline:** Build AI agents that see, reason, and act — entirely on your machine.
-- **Subhead:** Arrow records any interaction once, turns it into a visual workflow
-  graph, and runs it deterministically with local AI. No cloud, no telemetry, no
-  per-token fees.
+- **Headline:** Don't rent your agent. Own it.
+- **Subhead:** Arrow is not a cloud service that meters your every move. Record
+  any interaction once, compose it into a visual workflow graph, and run it
+  deterministically with local AI, local vision, local OCR, and local speech. No
+  cloud. No telemetry. No per-token fees. No renting your own intelligence.
 - **CTAs:** Join the Beta · See how it works · About Arrow
 
 ## Key capabilities (feature cards)
