@@ -23,64 +23,11 @@
       margin-bottom: 24px;
       font-size: 0.95rem;
     }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    .form-group label {
-      display: block;
-      color: #d5d9e2;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px 16px;
-      background: rgba(10, 10, 10, 0.8);
-      border: 1px solid rgba(31,34,40,.4);
-      border-radius: 8px;
-      color: #ffffff;
-      font-size: 1rem;
-      font-family: inherit;
-      box-sizing: border-box;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .form-group input[type="text"]:focus,
-    .form-group input[type="email"]:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(31, 34, 40, 0.3);
-    }
-    .form-group select {
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b98a5' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 16px center;
-      padding-right: 40px;
-    }
-    .form-group select option {
-      background: #1a1a1a;
-      color: #ffffff;
-    }
-    .form-group textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    @media (max-width: 600px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
+    .connect-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
     }
     .btn-submit {
       background: #ffffff;
@@ -91,45 +38,40 @@
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
       transition: opacity .15s ease;
     }
-    .btn-submit:hover {
-      opacity: .9;
-    }
-    .btn-submit:active {
-      transform: translateY(0);
-    }
-    .info-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 32px;
-    }
-    .info-card {
-      background: rgba(10, 10, 10, 0.6);
-      border: 1px solid rgba(31,34,40,.3);
-      border-radius: 8px;
-      padding: 20px;
-      text-align: center;
-    }
-    .info-card h3 {
+    .btn-submit:hover { opacity: .9; }
+    .email-line { color: #7d8187; margin: 16px 0 0; font-size: 0.9rem; }
+    .email-line code {
       color: #d5d9e2;
-      margin: 0 0 8px;
-      font-size: 1rem;
+      font-family: "Courier New", monospace;
+      background: rgba(10,10,10,.7);
+      padding: 3px 8px;
+      border-radius: 6px;
     }
-    .info-card p {
-      color: #7d8187;
-      margin: 0;
-      font-size: 0.85rem;
-      line-height: 1.5;
+    .exp-lead { color: #d5d9e2; line-height: 1.7; margin: 0 0 20px; }
+    .exp-list { color: #d5d9e2; line-height: 1.7; padding-left: 20px; margin: 0 0 24px; }
+    .exp-list li { margin-bottom: 8px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-pill {
+      background: rgba(34,211,238,.1);
+      color: var(--accent);
+      border: 1px solid rgba(34,211,238,.25);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.82rem;
     }
-    .info-card .icon { margin: 0 auto 14px; }
-    .info-card { transition: transform .2s ease, box-shadow .2s ease; }
-    .info-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
-    @media (max-width: 700px) {
-      .info-cards {
-        grid-template-columns: 1fr;
-      }
+    .resume-frame {
+      width: 100%;
+      height: 780px;
+      border: 1px solid rgba(31,34,40,.6);
+      border-radius: 8px;
+      background: #0a0a0a;
+    }
+    @media (max-width: 600px) {
+      .resume-frame { height: 520px; }
     }
   </style>
 </head>
@@ -149,79 +91,64 @@
   </header>
   <main class="container">
     <section id="hero" class="hero">
-      <h1>Contact Arrow</h1>
-      <p>Reach out to learn how deterministic, edge-ready automation can transform your operations.</p>
+      <h1>Contact</h1>
+      <p>Connect with the developer behind Arrow — background, experience, and résumé.</p>
     </section>
 
     <section class="contact-section">
-      <h2>Send us a message</h2>
-      <p class="subtitle">We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.</p>
-
-      <form id="contactForm" action="/api/contact" method="POST">
-        <div id="formMessage" style="display: none; padding: 16px; border-radius: 8px; margin-bottom: 20px; text-align: center;"></div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" placeholder="Your name" required />
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" required />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="inquiryType">Inquiry Type</label>
-          <select id="inquiryType" name="inquiryType" required>
-            <option value="" disabled selected>Select an option</option>
-            <option value="partners">Partnership Opportunity</option>
-            <option value="bug">Bug Report</option>
-            <option value="feature">Feature Request</option>
-            <option value="general">General Inquiry</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="companyGroup" style="display: none;">
-          <label for="company">Company / Organization</label>
-          <input type="text" id="company" name="company" placeholder="Your company name" />
-        </div>
-
-        <div class="form-group" id="versionGroup" style="display: none;">
-          <label for="version">Arrow Version</label>
-          <input type="text" id="version" name="version" placeholder="e.g., 1.5.0" />
-        </div>
-
-        <div class="form-group">
-          <label for="subject">Subject</label>
-          <input type="text" id="subject" name="subject" placeholder="Brief summary of your message" required />
-        </div>
-
-        <div class="form-group">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" placeholder="Tell us more about your inquiry..." required></textarea>
-        </div>
-
-        <button type="submit" class="btn-submit" id="submitBtn">Send Message</button>
-      </form>
-
-      <div class="info-cards">
-        <div class="info-card">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.5.4 4 2.4 4 5"/></svg></div>
-          <h3>Partnerships</h3>
-          <p>Interested in integrating Arrow or exploring business opportunities? Let's talk.</p>
-        </div>
-        <div class="info-card">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div>
-          <h3>Bug Reports</h3>
-          <p>Found an issue? Help us improve by reporting bugs with detailed information.</p>
-        </div>
-        <div class="info-card">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3z"/></svg></div>
-          <h3>Feature Requests</h3>
-          <p>Have an idea for a new feature? We'd love to hear your suggestions.</p>
-        </div>
+      <h2>Get in touch</h2>
+      <p class="subtitle">Reach out on LinkedIn or copy my email — a direct line, no forms.</p>
+      <div class="connect-row">
+        <a class="btn-submit" href="https://www.linkedin.com/in/rodrigo-benitez-9184aa214/" target="_blank" rel="noopener">Connect on LinkedIn</a>
+        <button class="btn-submit" id="emailBtn" type="button">Copy email</button>
       </div>
+      <p class="email-line">Email: <code id="emailAddr">arrowlocalpower@gmail.com</code></p>
+    </section>
+
+    <section class="contact-section">
+      <h2>About my experience</h2>
+      <p class="exp-lead">
+        I'm Rodrigo David Benitez, a software engineer and AI/ML specialist building production
+        systems since 2017. Largely self-taught, I started as a Spanish–English interpreter and
+        grew into engineering — shipping speech, translation, and voice-automation software for
+        language-services companies, and today working on local-first, edge-ready AI. Arrow is my
+        node-graph RPA for edge devices, wired together from that same local-inference stack.
+      </p>
+      <ul class="exp-list">
+        <li><strong>DevOps Engineer &amp; AI Implementation — Synopsys (2025–present):</strong> run and troubleshoot Jenkins CI/CD pipelines, ship automation that removes manual toil, and build local-first LLM/RAG tooling with no proprietary data leaving the enterprise.</li>
+        <li><strong>GenAI Team Lead — DigPatho (2024):</strong> led the generative-AI team building vision models for breast-cancer diagnosis support, including a deferred-diagnosis tool grounded in a custom RAG framework.</li>
+        <li><strong>Freelance AI/ML Developer (2022–2024):</strong> shipped local-first models for international clients — a multilingual transcription platform scaled to 1,000+ concurrent streams across 20 languages, a VoIP AI interpreter, and an agentic voice assistant.</li>
+        <li><strong>Earlier engineering (2017–2022):</strong> built live speech-to-text and translation tools, automation suites, and VoIP platforms for language-services companies, cutting interpreter effort by up to 40%.</li>
+        <li><strong>Approach:</strong> prefer deterministic, offline-capable systems — local inference, no API calls, no per-token fees.</li>
+      </ul>
+      <div class="tags">
+        <span class="tag-pill">Python</span>
+        <span class="tag-pill">PyTorch</span>
+        <span class="tag-pill">RAG</span>
+        <span class="tag-pill">Agentic AI</span>
+        <span class="tag-pill">Local/Edge Inference</span>
+        <span class="tag-pill">llama.cpp</span>
+        <span class="tag-pill">GGUF</span>
+        <span class="tag-pill">Ollama</span>
+        <span class="tag-pill">Whisper</span>
+        <span class="tag-pill">Transformers</span>
+        <span class="tag-pill">FastAPI</span>
+        <span class="tag-pill">Django</span>
+        <span class="tag-pill">Node.js</span>
+        <span class="tag-pill">Jenkins</span>
+        <span class="tag-pill">Docker</span>
+        <span class="tag-pill">Kubernetes</span>
+        <span class="tag-pill">AWS</span>
+        <span class="tag-pill">SQL</span>
+      </div>
+    </section>
+
+    <section class="contact-section">
+      <h2>Résumé</h2>
+      <p class="subtitle">Rodrigo David Benitez — full résumé.</p>
+      <!-- ponytail: native browser PDF viewer via <iframe>, no PDF.js needed -->
+      <iframe class="resume-frame" src="assets/docs/resume_rodrigo_benitez.pdf" title="Rodrigo Benitez Résumé" loading="lazy"></iframe>
+      <p class="email-line"><a href="assets/docs/resume_rodrigo_benitez.pdf" target="_blank" rel="noopener" style="color: var(--accent);">Open the résumé in a new tab</a></p>
     </section>
   </main>
   <footer>
@@ -230,68 +157,17 @@
   </footer>
   <script src="assets/js/app.js"></script>
   <script>
-    document.getElementById('inquiryType').addEventListener('change', function() {
-      const companyGroup = document.getElementById('companyGroup');
-      const versionGroup = document.getElementById('versionGroup');
-
-      if (this.value === 'partners') {
-        companyGroup.style.display = 'block';
-        versionGroup.style.display = 'none';
-      } else if (this.value === 'bug') {
-        companyGroup.style.display = 'none';
-        versionGroup.style.display = 'block';
-      } else {
-        companyGroup.style.display = 'none';
-        versionGroup.style.display = 'none';
-      }
-    });
-
-    document.getElementById('contactForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const submitBtn = document.getElementById('submitBtn');
-      const messageDiv = document.getElementById('formMessage');
-      const form = this;
-
-      // Disable submit button
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending...';
-      messageDiv.style.display = 'none';
-
+    // ponytail: Async Clipboard API needs a secure context (https/localhost); shows a hint otherwise.
+    document.getElementById('emailBtn').addEventListener('click', async function () {
+      const btn = this;
+      const email = document.getElementById('emailAddr').textContent.trim();
       try {
-        const formData = new FormData(form);
-        const response = await fetch(form.action, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          messageDiv.style.display = 'block';
-          messageDiv.style.background = 'rgba(76, 175, 80, 0.2)';
-          messageDiv.style.border = '1px solid #4CAF50';
-          messageDiv.style.color = '#4CAF50';
-          messageDiv.textContent = data.message || 'Message sent successfully! We will get back to you soon.';
-          form.reset();
-          document.getElementById('companyGroup').style.display = 'none';
-          document.getElementById('versionGroup').style.display = 'none';
-        } else {
-          throw new Error(data.message || 'Form submission failed');
-        }
-      } catch (error) {
-        messageDiv.style.display = 'block';
-        messageDiv.style.background = 'rgba(244, 67, 54, 0.2)';
-        messageDiv.style.border = '1px solid #f44336';
-        messageDiv.style.color = '#f44336';
-        messageDiv.textContent = 'An error occurred. Please try again.';
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send Message';
+        await navigator.clipboard.writeText(email);
+        btn.textContent = 'Copied!';
+      } catch (e) {
+        btn.textContent = 'Press Ctrl+C';
       }
+      setTimeout(() => { btn.textContent = 'Copy email'; }, 1800);
     });
   </script>
 </body>
