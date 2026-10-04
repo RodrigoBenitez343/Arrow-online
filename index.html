@@ -53,8 +53,17 @@
     .cta-section h2 { color: #ffffff; font-size: 1.8rem; margin: 0 0 16px; }
     .cta-section p { color: #7d8187; font-size: 1.1rem; margin: 0 0 24px; }
 
+    .repo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .repo-card { background: rgba(26,26,26,.9); border: 1px solid rgba(31,34,40,.3); border-radius: 12px; padding: 24px; }
+    .repo-card h3 { color: #d5d9e2; font-size: 1.05rem; margin: 0 0 10px; }
+    .repo-card p { color: #7d8187; font-size: .9rem; line-height: 1.5; margin: 0 0 18px; }
+    .clone-box { display: flex; align-items: center; gap: 10px; background: #0a0a0a; border: 1px solid rgba(31,34,40,.6); border-radius: 8px; padding: 10px 12px; }
+    .clone-box code { flex: 1; min-width: 0; overflow-x: auto; color: #d5d9e2; font-family: "Courier New", monospace; font-size: .85rem; white-space: nowrap; }
+    .copy-btn { flex: none; background: #ffffff; color: #0a0a0a; border: none; border-radius: 999px; padding: 8px 16px; font-size: .85rem; font-weight: 500; cursor: pointer; transition: opacity .15s ease; }
+    .copy-btn:hover { opacity: .88; }
+
     @media (max-width: 900px) {
-      .feature-grid, .pillars, .steps, .audience-grid { grid-template-columns: 1fr; }
+      .feature-grid, .pillars, .steps, .audience-grid, .repo-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -171,6 +180,27 @@
       </div>
     </section>
 
+    <!-- Open source / repository -->
+    <section class="feature-section">
+      <h2>Open source</h2>
+      <p class="section-sub">Arrow's home is on GitHub — browse the source and clone it in one command.</p>
+      <div class="repo-row">
+        <div class="repo-card reveal">
+          <h3>Repository</h3>
+          <p>Source code, issues, and releases.</p>
+          <a class="btn btn-primary" href="https://github.com/RodrigoBenitez343/Arrow" target="_blank" rel="noopener">Visit the repository</a>
+        </div>
+        <div class="repo-card reveal reveal-d1">
+          <h3>Clone it</h3>
+          <p>Get a local copy:</p>
+          <div class="clone-box">
+            <code id="cloneCmd">git clone https://github.com/RodrigoBenitez343/Arrow.git</code>
+            <button class="copy-btn" id="cloneCopy" type="button">Copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA -->
     <section class="cta-section reveal">
       <h2>Automation that stays on your machine.</h2>
@@ -187,5 +217,18 @@
   </footer>
 
   <script src="assets/js/app.js"></script>
+  <script>
+    // ponytail: Async Clipboard API needs a secure context (https/localhost); shows a hint otherwise.
+    document.getElementById('cloneCopy').addEventListener('click', async function () {
+      const btn = this;
+      try {
+        await navigator.clipboard.writeText(document.getElementById('cloneCmd').textContent.trim());
+        btn.textContent = 'Copied!';
+      } catch (e) {
+        btn.textContent = 'Press Ctrl+C';
+      }
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+    });
+  </script>
 </body>
 </html>
